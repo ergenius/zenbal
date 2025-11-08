@@ -55,93 +55,93 @@ Include zenbal in your bash script:
 source ./zenbal
 
 # Now you can use zenbal functions
-gem_echo_success "Hello, World!"
-gem_echo_error "Something went wrong"
+zen_echo_success "Hello, World!"
+zen_echo_error "Something went wrong"
 ```
 
 ### Quick Examples
 
 ```bash
 # Colored output
-gem_echo_green "Success message"
-gem_echo_red "Error message"
-gem_echo_yellow "Warning message"
+zen_echo_green "Success message"
+zen_echo_red "Error message"
+zen_echo_yellow "Warning message"
 
 # String manipulation
-gem_string_lower "HELLO WORLD"
+zen_string_lower "HELLO WORLD"
 echo $ZEN_FUNC_RESULT  # Output: hello world
 
 # Random generation
-gem_random_alphanumeric 8
+zen_random_alphanumeric 8
 echo $ZEN_FUNC_RESULT  # Output: aB3kX9mP
 
 # File operations
-gem_file_tmp_name
-echo $ZEN_FUNC_RESULT  # Output: /tmp/gem-abc123.tmp
+zen_file_tmp_name
+echo $ZEN_FUNC_RESULT  # Output: /tmp/zen-abc123.tmp
 
 # Network operations
-gem_net_download_url "https://example.com/file.txt" "./downloaded.txt"
+zen_net_download_url "https://example.com/file.txt" "./downloaded.txt"
 ```
 
 ## Function Reference
 
-### Echo Functions (`gem_echo`)
-- `gem_echo_red()`, `gem_echo_green()`, `gem_echo_yellow()`, `gem_echo_blue()`, `gem_echo_magenta()`, `gem_echo_cyan()` - Colored text output
-- `gem_echo_h1()`, `gem_echo_h2()`, `gem_echo_h3()` - Header formatting
-- `gem_echo_success()`, `gem_echo_error()`, `gem_echo_warning()` - Status messages
-- `gem_echo_panic()` - Error message with exit
-- `gem_echo_repeat()` - Repeat string multiple times
+### Echo Functions (`zen_echo`)
+- `zen_echo_red()`, `zen_echo_green()`, `zen_echo_yellow()`, `zen_echo_blue()`, `zen_echo_magenta()`, `zen_echo_cyan()` - Colored text output
+- `zen_echo_h1()`, `zen_echo_h2()`, `zen_echo_h3()` - Header formatting
+- `zen_echo_success()`, `zen_echo_error()`, `zen_echo_warning()` - Status messages
+- `zen_echo_panic()` - Error message with exit
+- `zen_echo_repeat()` - Repeat string multiple times
 
-### String Functions (`gem_string`)
-- `gem_string_beginswith()` - Check if string starts with prefix
-- `gem_string_explode()` - Split string by delimiter
-- `gem_string_lower()` - Convert to lowercase
-- `gem_string_upper()` - Convert to uppercase
-- `gem_string_replace_all()` - Replace all occurrences in string
+### String Functions (`zen_string`)
+- `zen_string_beginswith()` - Check if string starts with prefix
+- `zen_string_explode()` - Split string by delimiter
+- `zen_string_lower()` - Convert to lowercase
+- `zen_string_upper()` - Convert to uppercase
+- `zen_string_replace_all()` - Replace all occurrences in string
 
-### Random Functions (`gem_random`)
-- `gem_random_int30()` - Generate random 30-bit integer
-- `gem_random_string()` - Generate random string from character set
-- `gem_random_alphanumeric()` - Generate alphanumeric string
-- `gem_random_lowercase_alphanumeric()` - Generate lowercase alphanumeric
-- `gem_random_uppercase_alphanumeric()` - Generate uppercase alphanumeric
-- `gem_random_lowercase_alpha()` - Generate lowercase alphabetic
-- `gem_random_uppercase_alpha()` - Generate uppercase alphabetic
+### Random Functions (`zen_random`)
+- `zen_random_int30()` - Generate random 30-bit integer
+- `zen_random_string()` - Generate random string from character set
+- `zen_random_alphanumeric()` - Generate alphanumeric string
+- `zen_random_lowercase_alphanumeric()` - Generate lowercase alphanumeric
+- `zen_random_uppercase_alphanumeric()` - Generate uppercase alphanumeric
+- `zen_random_lowercase_alpha()` - Generate lowercase alphabetic
+- `zen_random_uppercase_alpha()` - Generate uppercase alphabetic
 
-### File Functions (`gem_file`)
-- `gem_file_tmp_name()` - Generate unique temporary file name
-- `gem_file_replace_string()` - Replace string in file
-- `gem_file_read_content()` - Read file content safely
-- `gem_file_setup_path_tmp()` - Setup temporary directory
+### File Functions (`zen_file`)
+- `zen_file_tmp_name()` - Generate unique temporary file name
+- `zen_file_replace_string()` - Replace string in file
+- `zen_file_read_content()` - Read file content safely
+- `zen_file_setup_path_tmp()` - Setup temporary directory
 
-### Assert Functions (`gem_assert`)
-- `gem_assert_file_exist()` - Assert file exists
-- `gem_assert_directory_exist()` - Assert directory exists
+### Assert Functions (`zen_assert`)
+- `zen_assert_file_exist()` - Assert file exists
+- `zen_assert_directory_exist()` - Assert directory exists
 
-### Network Functions (`gem_net`)
-- `gem_net_download_url()` - Download file with curl/wget fallback
-- `gem_net_download_url_if_file_not_found()` - Conditional download
+### Network Functions (`zen_net`)
+- `zen_net_download_url()` - Download file with curl/wget fallback
+- `zen_net_download_url_if_file_not_found()` - Conditional download
 
-### Command Functions (`gem_command`)
-- `gem_command_exist()` - Check if command exists
+### Command Functions (`zen_command`)
+- `zen_command_exist()` - Check if command exists
 
-### Environment Functions (`gem_environment`)
-- `gem_environment_detect()` - Auto-detect OS and distribution
-- `gem_environment_display()` - Display environment information
+### Environment Functions (`zen_environment`)
+- `zen_environment_detect()` - Auto-detect OS and distribution
+- `zen_environment_display()` - Display environment information
 
-### Update Functions (`gem_update`)
-- `gem_update_from_github()` - Manual update from repository
-- `gem_update_check_on_load()` - Automatic update check
+### Update Functions (`zen_update`)
+- `zen_update_from_github()` - Manual update from repository
+- `zen_update_check_on_load()` - Automatic update check
 
-### Erlang Functions (`gem_erlang`)
-- `gem_erlang_random_short_node_name()` - Generate Erlang node name
+### Erlang Functions (`zen_erlang`)
+- `zen_erlang_random_short_node_name()` - Generate Erlang node name
 
 ## Configuration
 
 ### Environment Variables
 
 - `ZEN_AUTO_UPDATE`: Enable automatic updates (`true` or `1`)
-- `ZEN_PATH_TMP_PREFIX`: Prefix for temporary files (default: `gem`)
+- `ZEN_PATH_TMP_PREFIX`: Prefix for temporary files (default: `zen`)
 - `ZEN_PATH_TMP`: Custom temporary directory path
 
 ### Return Values

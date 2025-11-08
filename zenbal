@@ -1,0 +1,470 @@
+#!/bin/bash
+# zenbal - Bash Scripting Library
+
+######################################################
+## Constants and other Environment Variable Names
+######################################################
+
+# Escape sequence and resets
+ZEN_SC_ESC="\033["
+ZEN_SC_RESET_ALL="\033[m"
+# Foreground colours
+ZEN_SC_FG_BLACK="${ZEN_SC_ESC}30m"
+ZEN_SC_FG_RED="${ZEN_SC_ESC}31m"
+ZEN_SC_FG_GREEN="${ZEN_SC_ESC}32m"
+ZEN_SC_FG_YELLOW="${ZEN_SC_ESC}33m"
+ZEN_SC_FG_BLUE="${ZEN_SC_ESC}34m"
+ZEN_SC_FG_MAGENTA="${ZEN_SC_ESC}35m"
+ZEN_SC_FG_CYAN="${ZEN_SC_ESC}36m"
+ZEN_SC_FG_WHITE="${ZEN_SC_ESC}37m"
+ZEN_SC_FG_BOLD="${ZEN_SC_ESC}1m"
+ZEN_SC_FG_ITALIC="${ZEN_SC_ESC}3m"
+ZEN_SC_FG_UNDERLINE="${ZEN_SC_ESC}4m"
+ZEN_SC_FG_BLINKING="${ZEN_SC_ESC}5m"
+ZEN_SC_FG_INVERTED="${ZEN_SC_ESC}7m"
+
+######################################################
+## functions
+######################################################
+
+##====================================================
+## zen_echo
+##====================================================
+
+# Repeat given string the specified number of times
+zen_echo_repeat() {
+    local l_range
+    local l_i
+	l_range=$(seq 1 "$1")
+	for l_i in $l_range ; do echo -n "$2"; done
+}
+
+zen_echo_red() {
+    echo -e "${ZEN_SC_FG_RED}${1}${ZEN_SC_RESET_ALL}"
+}
+zen_echo_green() {
+    echo -e "${ZEN_SC_FG_GREEN}${1}${ZEN_SC_RESET_ALL}"
+}
+zen_echo_yellow() {
+    echo -e "${ZEN_SC_FG_YELLOW}${1}${ZEN_SC_RESET_ALL}"
+}
+zen_echo_blue() {
+    echo -e "${ZEN_SC_FG_BLUE}${1}${ZEN_SC_RESET_ALL}"
+}
+zen_echo_magenta() {
+    echo -e "${ZEN_SC_FG_MAGENTA}${1}${ZEN_SC_RESET_ALL}"
+}
+zen_echo_cyan() {
+    echo -e "${ZEN_SC_FG_cyan}${1}${ZEN_SC_RESET_ALL}"
+}
+
+zen_echo_h1() {
+  echo -e "\n${ZEN_SC_FG_INVERTED}${1}${ZEN_SC_RESET_ALL}"
+}
+zen_echo_h2() {
+  echo -e "\n${ZEN_SC_FG_UNDERLINE}${1}${ZEN_SC_RESET_ALL}"
+}
+zen_echo_h3() {
+  echo -e "\n${ZEN_SC_FG_ITALIC}${1}${ZEN_SC_RESET_ALL}"
+}
+
+zen_echo_success() {
+    zen_echo_green "\n$1"
+}
+
+zen_echo_panic() {
+    zen_echo_red "\n$1"
+    exit 1
+}
+
+zen_echo_error() {
+    zen_echo_red "\n$1"
+}
+
+zen_echo_warning() {
+    zen_echo_yellow "\n$1"
+}
+
+##====================================================
+## zen_string
+##====================================================
+
+zen_string_beginswith() { 
+    case $2 in "$1"*) true;; *) false;; esac; 
+}
+
+zen_string_explode() {
+    local l
+    l=$(echo "$1" | tr "$2" "\n")
+    ZEN_FUNC_RESULT=$(echo "$l")
+}
+
+zen_string_lower() {
+    ZEN_FUNC_RESULT=$(echo "$1" | tr -s "[:upper:]" "[:lower:]")
+}
+
+zen_string_upper() {
+    ZEN_FUNC_RESULT=$(echo "$1" | tr -s "[:upper:]" "[:lower:]")
+}
+
+zen_string_replace_all() {
+    ZEN_FUNC_RESULT=${1//$2/$3}
+}
+
+##====================================================
+## zen_random
+##====================================================
+
+# Generates a uniformly-distributed unsigned 30-bit integer in the specified interval
+zen_random_int30() {
+    if [ -z "$1" ]; then
+        ZEN_FUNC_RESULT=$(( (RANDOM<<15)|RANDOM ))
+    else
+        if [ -z "$2" ]; then
+            ZEN_FUNC_RESULT=$(( ((RANDOM<<15)|RANDOM) % "$1" + 0 ))
+        else
+            ZEN_FUNC_RESULT=$(( ((RANDOM<<15)|RANDOM) % "$2" + "$1" ))
+        fi
+    fi
+}
+
+# Generates a random string from the specified set of characters 
+# of the specified length.
+# Globals:
+#   None
+# Arguments:
+#   1 - String containing set of characters to use
+#   2 - Length of the string to generate
+# Outputs:
+#   None
+# Returns:
+#   The string generated
+zen_random_string() {
+    ZEN_FUNC_RESULT=$(cat /dev/urandom | tr -dc "$1" | fold -w "$2" | head -n 1)
+}
+
+# Generates a random alphanumeric string.
+# Globals:
+#   None
+# Arguments:
+#   1 - Length of the string to generate
+# Outputs:
+#   None
+# Returns:
+#   The string generated
+zen_random_alphanumeric() {
+    zen_random_string 'a-zA-Z0-9' "$1"
+}
+
+# Generates a random lowercase alphanumeric string.
+# Globals:
+#   None
+# Arguments:
+#   1 - Length of the string to generate
+# Outputs:
+#   None
+# Returns:
+#   The string generated
+zen_random_lowercase_alphanumeric() {
+    zen_random_string 'a-z0-9' "$1"
+}
+
+# Generates a random lowercase alpha string
+# Globals:
+#   None
+# Arguments:
+#   Length of the string to generate
+# Outputs:
+#   None
+# Returns:
+#   The string generated
+zen_random_lowercase_alpha() {
+    zen_random_string 'a-z' "$1"
+}
+
+# Generates a random uppercase alphanumeric string
+# Globals:
+#   None
+# Arguments:
+#   Length of the string to generate
+# Outputs:
+#   None
+# Returns:
+#   The string generated
+zen_random_uppercase_alphanumeric() {
+    zen_random_string 'A-Z0-9' "$1"
+}
+
+# Generates a random uppercase alpha string
+# Globals:
+#   None
+# Arguments:
+#   Length of the string to generate
+# Outputs:
+#   None
+# Returns:
+#   The string generated
+zen_random_uppercase_alpha() {
+    zen_random_string 'A-Z' "$1"
+}
+
+# Generates a random string containing a unique (time based) numeric value
+# Globals:
+#   None
+# Arguments:
+#   None
+# Outputs:
+#   None
+# Returns:
+#   The string generated
+gen_random_string_time_based() {
+    ZEN_FUNC_RESULT=$(date +"%m%d%Y%H%M%S%N")
+}
+
+##====================================================
+## zen_file
+##====================================================
+
+zen_file_setup_path_tmp() {
+    if [[ -z "$ZEN_PATH_TMP" ]]; then
+        ZEN_PATH_TMP_PREFIX="zen"
+    fi
+    if [[ -z "$ZEN_PATH_TMP" ]]; then
+        ZEN_PATH_TMP=$(mktemp -d -t "${ZEN_PATH_TMP_PREFIX}-XXXXXXXXXX")
+    fi
+    if [[ ! -d "$ZEN_PATH_TMP" ]]; then
+        mkdir -p "$ZEN_PATH_TMP"
+    fi
+}
+
+## Create a unique temporary file name
+zen_file_tmp_name() {
+    zen_file_setup_path_tmp
+    zen_random_int30 16 128
+    zen_random_lowercase_alphanumeric $ZEN_FUNC_RESULT
+    ZEN_FUNC_RESULT="${ZEN_PATH_TMP}/${ZEN_FUNC_RESULT}.tmp"
+}
+
+## Replace string in a file
+zen_file_replace_string() {
+    zen_file_tmp_name
+    sed "s/$2/$3/g" "$1" > "$ZEN_FUNC_RESULT" && mv "$ZEN_FUNC_RESULT" "$1"
+}
+
+## Read the specified file content
+zen_file_read_content() {
+    echo "Reading file $1"
+    ZEN_FUNC_RESULT=`head -n 1 "$1"`
+    if [[ "${ZEN_FUNC_RESULT}" = "" ]]; then
+        zen_echo_panic "Failed reading the $1 file!"
+    else
+        echo "File successfully read."
+    fi
+}
+
+##====================================================
+## zen_assert
+##====================================================
+
+# Assert the specified directory exists
+zen_assert_file_exist() {
+    if [ ! -f "$1" ]; then
+        zen_echo_panic "File $1 does not exist! Aborting..."
+    fi
+}
+
+# Assert the specified directory exists
+zen_assert_directory_exist() {
+    if [ ! -d "$1" ]; then
+        zen_echo_panic "Directory $1 does not exist! Aborting..."
+    fi
+}
+
+##====================================================
+## zen_erlang
+##====================================================
+
+# Generates a random erlang short node name
+# Globals:
+#   None
+# Arguments:
+#   None
+# Outputs:
+#   None
+# Returns:
+#   The string generated
+zen_erlang_random_short_node_name() {
+    local l_alpha
+    zen_random_lowercase_alpha 6
+    l_alpha=$ZEN_FUNC_RESULT
+    gen_random_string_time_based
+    ZEN_FUNC_RESULT="${l_alpha}${ZEN_FUNC_RESULT}"
+}
+
+##====================================================
+## zen_command
+##====================================================
+
+# Check to see if the specified shell command exist
+zen_command_exist() {
+    local l
+    l=$(command -v "$1")
+    if [ -x "$l" ]; then
+        ZEN_FUNC_RESULT=true
+    else
+        ZEN_FUNC_RESULT=false
+    fi
+}
+
+##====================================================
+## zen_net
+##====================================================
+
+# Download the specified url using curl (prefered method) or wget
+zen_net_download_url() {
+    local l_url
+    if [ -z "$1" ]; then
+        zen_echo_panic "zen_net_download_url: Invalid parameter 1 (url)"
+    fi
+    if [ -z "$2" ]; then
+        zen_echo_panic "zen_net_download_url: Invalid parameter 2 (output file)"
+    fi    
+    ## Fix for working with spaces in URL
+    zen_string_replace_all "$1" " " "%20"
+    l_url=$ZEN_FUNC_RESULT
+    if [ -x "$(command -v curl)" ]; then
+        ZEN_FUNC_RESULT=$(curl -o "${2}" "${l_url}")
+    else 
+        if [ -x "$(command -v wget)" ]; then
+            ZEN_FUNC_RESULT=$(wget -O "${2}" "${l_url}")
+        else
+            zen_echo_panic "curl or wget are not available! 
+            Please install either curl or wget or download '${1}' to output '${2}' manually!"
+        fi
+    fi
+}
+
+# Download the specified url if output file does not exist otherwise do nothing
+zen_net_download_url_if_file_not_found() {
+    if [ ! -f "$2" ]; then
+        echo "File $2 does not exist. Downloading from ${1}..."
+        zen_net_download_url "$1" "$2"
+    fi
+}
+
+##====================================================
+## zen_environment
+##====================================================
+
+# Detect environment
+zen_environment_detect() {
+    zen_string_lower $(uname)
+    ZEN_OS_NAME=$ZEN_FUNC_RESULT
+    zen_string_lower $(uname -r)
+	ZEN_OS_KERNEL=$ZEN_FUNC_RESULT
+    zen_string_lower $(uname -m)
+	ZEN_OS_MACHINE_HARDWARE_NAME=$ZEN_FUNC_RESULT
+    ZEN_OS_BASED_ON='unknown'    
+    ZEN_OS_RELEASE='unknown'
+    if [ "$ZEN_OS_NAME" = "linux" ] ; then
+        if [ -f /etc/redhat-release ] ; then
+			ZEN_OS_BASED_ON='redhat'
+			ZEN_OS_DISTRO_ID=$(cat /etc/redhat-release |sed s/\ release.*//)
+			ZEN_OS_DISTRO_CODENAME=$(cat /etc/redhat-release | sed s/.*\(// | sed s/\)//)
+			ZEN_OS_RELEASE=$(cat /etc/redhat-release | sed s/.*release\ // | sed s/\ .*//)
+		elif [ -f /etc/debian_version ] ; then
+			ZEN_OS_BASED_ON='debian'
+			if [ -f /etc/lsb-release ] ; then
+		       	ZEN_OS_DISTRO_ID=$(cat /etc/lsb-release | grep '^DISTRIB_ID' | awk -F=  '{ print $2 }')
+			    ZEN_OS_DISTRO_CODENAME=$(cat /etc/lsb-release | grep '^DISTRIB_CODENAME' | awk -F=  '{ print $2 }')
+			    ZEN_OS_RELEASE=$(cat /etc/lsb-release | grep '^DISTRIB_RELEASE' | awk -F=  '{ print $2 }')
+            fi            
+		elif [ -f /etc/SuSE-release ] ; then
+			ZEN_OS_BASED_ON='suse'
+			ZEN_OS_DISTRO_CODENAME=$(cat /etc/SuSE-release | tr "\n" ' '| sed s/VERSION.*//)
+			ZEN_OS_RELEASE=$(cat /etc/SuSE-release | tr "\n" ' ' | sed s/.*=\ //)
+		elif [ -f /etc/mandrake-release ] ; then
+			ZEN_OS_BASED_ON='mandrake'
+			ZEN_OS_DISTRO_CODENAME=$(cat /etc/mandrake-release | sed s/.*\(// | sed s/\)//)
+			ZEN_OS_RELEASE=$(cat /etc/mandrake-release | sed s/.*release\ // | sed s/\ .*//)
+		fi
+    else
+        zen_echo_warning "Untested OS. Good luck running zenbal!"
+	fi
+}
+
+# Display information about zenbal defined environment variables
+zen_environment_display() {
+    zen_echo_h2 "ZEN environment variables:"
+    echo "$ZEN_OS_NAME"
+    echo "$ZEN_OS_KERNEL"
+    echo "$ZEN_OS_MACHINE_HARDWARE_NAME"
+    echo "$ZEN_OS_BASED_ON"
+    echo "$ZEN_OS_DISTRO_ID"
+    echo "$ZEN_OS_DISTRO_CODENAME"
+    echo "$ZEN_OS_RELEASE"
+}
+
+##====================================================
+## zen_update
+##====================================================
+
+# Update zenbal from GitHub repository if ZEN_AUTO_UPDATE is enabled
+zen_update_from_github() {
+    local l_github_url="https://raw.githubusercontent.com/ergenius/zenbal/main/zenbal"
+    local l_script_path="${BASH_SOURCE[0]}"
+    local l_backup_path="${l_script_path}.bak"
+    
+    # Check if ZEN_AUTO_UPDATE is set to true or 1
+    if [[ "$ZEN_AUTO_UPDATE" == "true" || "$ZEN_AUTO_UPDATE" == "1" ]]; then
+        zen_echo_h3 "ZEN_AUTO_UPDATE is enabled. Checking for updates..."
+
+        # Create a backup of the current file
+        if cp "$l_script_path" "$l_backup_path"; then
+            zen_echo_green "Backup created at: $l_backup_path"
+        else
+            zen_echo_error "Failed to create backup. Aborting update."
+            return 1
+        fi
+        
+        # Download the latest version from GitHub
+        zen_echo_h3 "Downloading latest version from GitHub..."
+        if zen_net_download_url "$l_github_url" "$l_script_path"; then
+            zen_echo_success "Successfully updated zenbal from GitHub repository!"
+            zen_echo_green "Previous version backed up to: $l_backup_path"
+            
+            # Make the updated file executable
+            chmod +x "$l_script_path"
+            
+            zen_echo_warning "Note: Please restart your script to use the updated version."
+        else
+            zen_echo_error "Failed to download update. Restoring from backup..."
+            if mv "$l_backup_path" "$l_script_path"; then
+                zen_echo_green "Original file restored successfully."
+            else
+                zen_echo_panic "Failed to restore backup! Please check $l_backup_path manually."
+            fi
+            return 1
+        fi
+    else
+        zen_echo_h3 "ZEN_AUTO_UPDATE is disabled. Skipping update check."
+        zen_echo_yellow "To enable auto-update, set ZEN_AUTO_UPDATE=true or ZEN_AUTO_UPDATE=1"
+    fi
+}
+
+# Check for updates on library load if ZEN_AUTO_UPDATE is set
+zen_update_check_on_load() {
+    if [[ "$ZEN_AUTO_UPDATE" == "true" || "$ZEN_AUTO_UPDATE" == "1" ]]; then
+        zen_update_from_github
+    fi
+}
+
+######################################################
+
+zen_environment_detect
+zen_environment_display
+
+# Check for updates if auto-update is enabled
+zen_update_check_on_load
+
+

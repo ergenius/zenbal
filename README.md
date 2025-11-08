@@ -1,10 +1,10 @@
-# gembal
-**GEM BAsh Library** - A comprehensive Bash utility library
+# zenbal
+**ZEN BAsh Library** - A comprehensive Bash utility library
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Bash](https://img.shields.io/badge/Bash-4.0%2B-brightgreen.svg)](https://www.gnu.org/software/bash/)
 
-The GEM BAsh Library (gembal) is a feature-rich bash script that acts as a utility library for other bash scripts. It provides a comprehensive set of functions that make shell scripting more efficient, readable, and maintainable.
+The ZEN BAsh Library (zenbal) is a feature-rich bash script that acts as a utility library for other bash scripts. It provides a comprehensive set of functions that make shell scripting more efficient, readable, and maintainable.
 
 ## Features
 
@@ -22,14 +22,14 @@ The GEM BAsh Library (gembal) is a feature-rich bash script that acts as a utili
 
 ### Manual Installation
 
-Download gembal directly from the repository:
+Download zenbal directly from the repository:
 
 ```bash
 # Download the latest version
-curl -O https://raw.githubusercontent.com/ergenius/gembal/main/gembal
+curl -O https://raw.githubusercontent.com/ergenius/zenbal/main/zenbal
 
 # Make it executable
-chmod +x gembal
+chmod +x zenbal
 ```
 
 ### Auto-Update Feature
@@ -37,24 +37,24 @@ chmod +x gembal
 Enable automatic updates by setting the environment variable:
 
 ```bash
-export GEM_AUTO_UPDATE=true
+export ZEN_AUTO_UPDATE=true
 # or
-export GEM_AUTO_UPDATE=1
+export ZEN_AUTO_UPDATE=1
 ```
 
 ## Usage
 
 ### Basic Usage
 
-Include gembal in your bash script:
+Include zenbal in your bash script:
 
 ```bash
 #!/bin/bash
 
-# Source the gembal library
-source ./gembal
+# Source the zenbal library
+source ./zenbal
 
-# Now you can use gembal functions
+# Now you can use zenbal functions
 gem_echo_success "Hello, World!"
 gem_echo_error "Something went wrong"
 ```
@@ -69,15 +69,15 @@ gem_echo_yellow "Warning message"
 
 # String manipulation
 gem_string_lower "HELLO WORLD"
-echo $GEM_FUNC_RESULT  # Output: hello world
+echo $ZEN_FUNC_RESULT  # Output: hello world
 
 # Random generation
 gem_random_alphanumeric 8
-echo $GEM_FUNC_RESULT  # Output: aB3kX9mP
+echo $ZEN_FUNC_RESULT  # Output: aB3kX9mP
 
 # File operations
 gem_file_tmp_name
-echo $GEM_FUNC_RESULT  # Output: /tmp/gem-abc123.tmp
+echo $ZEN_FUNC_RESULT  # Output: /tmp/gem-abc123.tmp
 
 # Network operations
 gem_net_download_url "https://example.com/file.txt" "./downloaded.txt"
@@ -140,13 +140,13 @@ gem_net_download_url "https://example.com/file.txt" "./downloaded.txt"
 
 ### Environment Variables
 
-- `GEM_AUTO_UPDATE`: Enable automatic updates (`true` or `1`)
-- `GEM_PATH_TMP_PREFIX`: Prefix for temporary files (default: `gem`)
-- `GEM_PATH_TMP`: Custom temporary directory path
+- `ZEN_AUTO_UPDATE`: Enable automatic updates (`true` or `1`)
+- `ZEN_PATH_TMP_PREFIX`: Prefix for temporary files (default: `gem`)
+- `ZEN_PATH_TMP`: Custom temporary directory path
 
 ### Return Values
 
-Many functions return their results in the global variable `GEM_FUNC_RESULT`. Always check this variable after calling functions that return values.
+Many functions return their results in the global variable `ZEN_FUNC_RESULT`. Always check this variable after calling functions that return values.
 
 ## Supported Platforms
 
@@ -164,4 +164,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Support
 
-If you encounter any issues or have questions, please [open an issue](https://github.com/ergenius/gembal/issues) on GitHub.
+If you encounter any issues or have questions, please [open an issue](https://github.com/ergenius/zenbal/issues) on GitHub.

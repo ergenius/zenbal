@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# GEM Bash Shell Library (gembsl) 
-# gembsl is a small bash script that acts as a library for other bash scripts
+# GEM BAsh Library (gembal) 
+# gembal is a small bash script that acts as a library for other bash scripts
 
 ######################################################
 ## Constants and other Environment Variable Names
@@ -407,9 +407,66 @@ gem_environment_display() {
     echo "$GEM_OS_RELEASE"
 }
 
+##====================================================
+## gem_update
+##====================================================
+
+# Update gembal from GitHub repository if GEM_AUTO_UPDATE is enabled
+gem_update_from_github() {
+    local l_github_url="https://raw.githubusercontent.com/ergenius/gembal/main/gembal"
+    local l_script_path="${BASH_SOURCE[0]}"
+    local l_backup_path="${l_script_path}.bak"
+    
+    # Check if GEM_AUTO_UPDATE is set to true or 1
+    if [[ "$GEM_AUTO_UPDATE" == "true" || "$GEM_AUTO_UPDATE" == "1" ]]; then
+        gem_echo_h3 "GEM_AUTO_UPDATE is enabled. Checking for updates..."
+
+        # Create a backup of the current file
+        if cp "$l_script_path" "$l_backup_path"; then
+            gem_echo_green "Backup created at: $l_backup_path"
+        else
+            gem_echo_error "Failed to create backup. Aborting update."
+            return 1
+        fi
+        
+        # Download the latest version from GitHub
+        gem_echo_h3 "Downloading latest version from GitHub..."
+        if gem_net_download_url "$l_github_url" "$l_script_path"; then
+            gem_echo_success "Successfully updated gembal from GitHub repository!"
+            gem_echo_green "Previous version backed up to: $l_backup_path"
+            
+            # Make the updated file executable
+            chmod +x "$l_script_path"
+            
+            gem_echo_warning "Note: Please restart your script to use the updated version."
+        else
+            gem_echo_error "Failed to download update. Restoring from backup..."
+            if mv "$l_backup_path" "$l_script_path"; then
+                gem_echo_green "Original file restored successfully."
+            else
+                gem_echo_panic "Failed to restore backup! Please check $l_backup_path manually."
+            fi
+            return 1
+        fi
+    else
+        gem_echo_h3 "GEM_AUTO_UPDATE is disabled. Skipping update check."
+        gem_echo_yellow "To enable auto-update, set GEM_AUTO_UPDATE=true or GEM_AUTO_UPDATE=1"
+    fi
+}
+
+# Check for updates on library load if GEM_AUTO_UPDATE is set
+gem_update_check_on_load() {
+    if [[ "$GEM_AUTO_UPDATE" == "true" || "$GEM_AUTO_UPDATE" == "1" ]]; then
+        gem_update_from_github
+    fi
+}
+
 ######################################################
 
 gem_environment_detect
 gem_environment_display
+
+# Check for updates if auto-update is enabled
+gem_update_check_on_load
 
 

@@ -364,7 +364,9 @@ zen_environment_detect() {
 	ZEN_OS_KERNEL=$ZEN_FUNC_RESULT
     zen_string_lower $(uname -m)
 	ZEN_OS_MACHINE_HARDWARE_NAME=$ZEN_FUNC_RESULT
-    ZEN_OS_BASED_ON='unknown'    
+    ZEN_OS_BASED_ON='unknown'
+    ZEN_OS_DISTRO_ID='unknown'
+    ZEN_OS_DISTRO_CODENAME='unknown' 
     ZEN_OS_RELEASE='unknown'
     if [ "$ZEN_OS_NAME" = "linux" ] ; then
         if [ -f /etc/redhat-release ] ; then
@@ -388,8 +390,25 @@ zen_environment_detect() {
 			ZEN_OS_DISTRO_CODENAME=$(cat /etc/mandrake-release | sed s/.*\(// | sed s/\)//)
 			ZEN_OS_RELEASE=$(cat /etc/mandrake-release | sed s/.*release\ // | sed s/\ .*//)
 		fi
+    elif [ "$ZEN_OS_NAME" = "darwin" ] ; then
+        ZEN_OS_BASED_ON='macos'
+        ZEN_OS_DISTRO_ID='macos'
+        # Get macOS version using sw_vers command
+        if command -v sw_vers >/dev/null 2>&1; then
+            ZEN_OS_RELEASE=$(sw_vers -productVersion)
+            ZEN_OS_DISTRO_CODENAME=$(sw_vers -productName)
+        else
+            # Fallback to system_profiler if sw_vers is not available
+            if command -v system_profiler >/dev/null 2>&1; then
+                ZEN_OS_RELEASE=$(system_profiler SPSoftwareDataType | grep "System Version" | awk '{print $4}')
+                ZEN_OS_DISTRO_CODENAME="macOS"
+            else
+                ZEN_OS_RELEASE="unknown"
+                ZEN_OS_DISTRO_CODENAME="macOS"
+            fi
+        fi
     else
-        zen_echo_warning "Untested OS. Good luck running zenbal!"
+        zen_echo_warning "Running on ${ZEN_OS_NAME} - zenbal should work fine on most Unix-like systems!"
 	fi
 }
 

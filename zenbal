@@ -1,6 +1,8 @@
 #!/bin/bash
 # zenbal - Bash Scripting Library
 
+set -euo pipefail
+
 ######################################################
 ## Constants and other Environment Variable Names
 ######################################################
@@ -498,19 +500,21 @@ zen_map_set() {
     fi
     
     # Look for existing entry and replace if found
-    for l_item in "${ZEN_MAP_DATA[@]}"; do
-        local l_item_map="${l_item%%${ZEN_MAP_DELIMITER}*}"
-        local l_remaining="${l_item#*${ZEN_MAP_DELIMITER}}"
-        local l_item_key="${l_remaining%%${ZEN_MAP_DELIMITER}*}"
-        local l_item_full_key="${l_item_map}${ZEN_MAP_DELIMITER}${l_item_key}"
-        
-        if [ "$l_item_full_key" = "$l_full_key" ]; then
-            l_new_array+=("$l_entry")
-            l_found=true
-        else
-            l_new_array+=("$l_item")
-        fi
-    done
+    if [ ${#ZEN_MAP_DATA[@]} -gt 0 ]; then
+        for l_item in "${ZEN_MAP_DATA[@]}"; do
+            local l_item_map="${l_item%%${ZEN_MAP_DELIMITER}*}"
+            local l_remaining="${l_item#*${ZEN_MAP_DELIMITER}}"
+            local l_item_key="${l_remaining%%${ZEN_MAP_DELIMITER}*}"
+            local l_item_full_key="${l_item_map}${ZEN_MAP_DELIMITER}${l_item_key}"
+            
+            if [ "$l_item_full_key" = "$l_full_key" ]; then
+                l_new_array+=("$l_entry")
+                l_found=true
+            else
+                l_new_array+=("$l_item")
+            fi
+        done
+    fi
     
     # If key wasn't found, add new entry
     if [ "$l_found" = false ]; then
@@ -518,7 +522,11 @@ zen_map_set() {
     fi
     
     # Update the global array
-    ZEN_MAP_DATA=("${l_new_array[@]}")
+    if [ ${#l_new_array[@]} -gt 0 ]; then
+        ZEN_MAP_DATA=("${l_new_array[@]}")
+    else
+        ZEN_MAP_DATA=()
+    fi
 }
 
 # Get a value from the map by key
@@ -545,18 +553,20 @@ zen_map_get() {
     fi
     
     # Look for the key in global array
-    for l_item in "${ZEN_MAP_DATA[@]}"; do
-        local l_item_map="${l_item%%${ZEN_MAP_DELIMITER}*}"
-        local l_remaining="${l_item#*${ZEN_MAP_DELIMITER}}"
-        local l_item_key="${l_remaining%%${ZEN_MAP_DELIMITER}*}"
-        local l_item_full_key="${l_item_map}${ZEN_MAP_DELIMITER}${l_item_key}"
-        
-        if [ "$l_item_full_key" = "$l_full_key" ]; then
-            local l_temp="${l_remaining#*${ZEN_MAP_DELIMITER}}"
-            ZEN_FUNC_RESULT="$l_temp"
-            return 0
-        fi
-    done
+    if [ ${#ZEN_MAP_DATA[@]} -gt 0 ]; then
+        for l_item in "${ZEN_MAP_DATA[@]}"; do
+            local l_item_map="${l_item%%${ZEN_MAP_DELIMITER}*}"
+            local l_remaining="${l_item#*${ZEN_MAP_DELIMITER}}"
+            local l_item_key="${l_remaining%%${ZEN_MAP_DELIMITER}*}"
+            local l_item_full_key="${l_item_map}${ZEN_MAP_DELIMITER}${l_item_key}"
+            
+            if [ "$l_item_full_key" = "$l_full_key" ]; then
+                local l_temp="${l_remaining#*${ZEN_MAP_DELIMITER}}"
+                ZEN_FUNC_RESULT="$l_temp"
+                return 0
+            fi
+        done
+    fi
 }
 
 # Check if a key exists in the map
@@ -583,17 +593,19 @@ zen_map_has_key() {
     fi
     
     # Look for the key in global array
-    for l_item in "${ZEN_MAP_DATA[@]}"; do
-        local l_item_map="${l_item%%${ZEN_MAP_DELIMITER}*}"
-        local l_remaining="${l_item#*${ZEN_MAP_DELIMITER}}"
-        local l_item_key="${l_remaining%%${ZEN_MAP_DELIMITER}*}"
-        local l_item_full_key="${l_item_map}${ZEN_MAP_DELIMITER}${l_item_key}"
-        
-        if [ "$l_item_full_key" = "$l_full_key" ]; then
-            ZEN_FUNC_RESULT="true"
-            return 0
-        fi
-    done
+    if [ ${#ZEN_MAP_DATA[@]} -gt 0 ]; then
+        for l_item in "${ZEN_MAP_DATA[@]}"; do
+            local l_item_map="${l_item%%${ZEN_MAP_DELIMITER}*}"
+            local l_remaining="${l_item#*${ZEN_MAP_DELIMITER}}"
+            local l_item_key="${l_remaining%%${ZEN_MAP_DELIMITER}*}"
+            local l_item_full_key="${l_item_map}${ZEN_MAP_DELIMITER}${l_item_key}"
+            
+            if [ "$l_item_full_key" = "$l_full_key" ]; then
+                ZEN_FUNC_RESULT="true"
+                return 0
+            fi
+        done
+    fi
 }
 
 # Remove a key-value pair from the map
@@ -618,19 +630,25 @@ zen_map_remove() {
     fi
     
     # Copy all items except the one with matching key
-    for l_item in "${ZEN_MAP_DATA[@]}"; do
-        local l_item_map="${l_item%%${ZEN_MAP_DELIMITER}*}"
-        local l_remaining="${l_item#*${ZEN_MAP_DELIMITER}}"
-        local l_item_key="${l_remaining%%${ZEN_MAP_DELIMITER}*}"
-        local l_item_full_key="${l_item_map}${ZEN_MAP_DELIMITER}${l_item_key}"
-        
-        if [ "$l_item_full_key" != "$l_full_key" ]; then
-            l_new_array+=("$l_item")
-        fi
-    done
+    if [ ${#ZEN_MAP_DATA[@]} -gt 0 ]; then
+        for l_item in "${ZEN_MAP_DATA[@]}"; do
+            local l_item_map="${l_item%%${ZEN_MAP_DELIMITER}*}"
+            local l_remaining="${l_item#*${ZEN_MAP_DELIMITER}}"
+            local l_item_key="${l_remaining%%${ZEN_MAP_DELIMITER}*}"
+            local l_item_full_key="${l_item_map}${ZEN_MAP_DELIMITER}${l_item_key}"
+            
+            if [ "$l_item_full_key" != "$l_full_key" ]; then
+                l_new_array+=("$l_item")
+            fi
+        done
+    fi
     
     # Update the global array
-    ZEN_MAP_DATA=("${l_new_array[@]}")
+    if [ ${#l_new_array[@]} -gt 0 ]; then
+        ZEN_MAP_DATA=("${l_new_array[@]}")
+    else
+        ZEN_MAP_DATA=()
+    fi
 }
 
 # Get all keys from the map
@@ -655,18 +673,20 @@ zen_map_keys() {
     fi
     
     # Extract keys for this map from global array
-    for l_item in "${ZEN_MAP_DATA[@]}"; do
-        local l_item_map="${l_item%%${ZEN_MAP_DELIMITER}*}"
-        if [ "$l_item_map" = "$l_map_name" ]; then
-            local l_remaining="${l_item#*${ZEN_MAP_DELIMITER}}"
-            local l_key="${l_remaining%%${ZEN_MAP_DELIMITER}*}"
-            if [ -z "$l_keys" ]; then
-                l_keys="$l_key"
-            else
-                l_keys="$l_keys $l_key"
+    if [ ${#ZEN_MAP_DATA[@]} -gt 0 ]; then
+        for l_item in "${ZEN_MAP_DATA[@]}"; do
+            local l_item_map="${l_item%%${ZEN_MAP_DELIMITER}*}"
+            if [ "$l_item_map" = "$l_map_name" ]; then
+                local l_remaining="${l_item#*${ZEN_MAP_DELIMITER}}"
+                local l_key="${l_remaining%%${ZEN_MAP_DELIMITER}*}"
+                if [ -z "$l_keys" ]; then
+                    l_keys="$l_key"
+                else
+                    l_keys="$l_keys $l_key"
+                fi
             fi
-        fi
-    done
+        done
+    fi
     
     ZEN_FUNC_RESULT="$l_keys"
 }
@@ -693,18 +713,20 @@ zen_map_values() {
     fi
     
     # Extract values for this map from global array
-    for l_item in "${ZEN_MAP_DATA[@]}"; do
-        local l_item_map="${l_item%%${ZEN_MAP_DELIMITER}*}"
-        if [ "$l_item_map" = "$l_map_name" ]; then
-            local l_remaining="${l_item#*${ZEN_MAP_DELIMITER}}"
-            local l_value="${l_remaining#*${ZEN_MAP_DELIMITER}}"
-            if [ -z "$l_values" ]; then
-                l_values="$l_value"
-            else
-                l_values="$l_values $l_value"
+    if [ ${#ZEN_MAP_DATA[@]} -gt 0 ]; then
+        for l_item in "${ZEN_MAP_DATA[@]}"; do
+            local l_item_map="${l_item%%${ZEN_MAP_DELIMITER}*}"
+            if [ "$l_item_map" = "$l_map_name" ]; then
+                local l_remaining="${l_item#*${ZEN_MAP_DELIMITER}}"
+                local l_value="${l_remaining#*${ZEN_MAP_DELIMITER}}"
+                if [ -z "$l_values" ]; then
+                    l_values="$l_value"
+                else
+                    l_values="$l_values $l_value"
+                fi
             fi
-        fi
-    done
+        done
+    fi
     
     ZEN_FUNC_RESULT="$l_values"
 }
@@ -731,12 +753,14 @@ zen_map_size() {
     fi
     
     # Count entries for this map in global array
-    for l_item in "${ZEN_MAP_DATA[@]}"; do
-        local l_item_map="${l_item%%${ZEN_MAP_DELIMITER}*}"
-        if [ "$l_item_map" = "$l_map_name" ]; then
-            l_count=$((l_count + 1))
-        fi
-    done
+    if [ ${#ZEN_MAP_DATA[@]} -gt 0 ]; then
+        for l_item in "${ZEN_MAP_DATA[@]}"; do
+            local l_item_map="${l_item%%${ZEN_MAP_DELIMITER}*}"
+            if [ "$l_item_map" = "$l_map_name" ]; then
+                l_count=$((l_count + 1))
+            fi
+        done
+    fi
     
     ZEN_FUNC_RESULT="$l_count"
 }
@@ -760,15 +784,21 @@ zen_map_clear() {
     fi
     
     # Copy all items except those belonging to this map
-    for l_item in "${ZEN_MAP_DATA[@]}"; do
-        local l_item_map="${l_item%%${ZEN_MAP_DELIMITER}*}"
-        if [ "$l_item_map" != "$l_map_name" ]; then
-            l_new_array+=("$l_item")
-        fi
-    done
+    if [ ${#ZEN_MAP_DATA[@]} -gt 0 ]; then
+        for l_item in "${ZEN_MAP_DATA[@]}"; do
+            local l_item_map="${l_item%%${ZEN_MAP_DELIMITER}*}"
+            if [ "$l_item_map" != "$l_map_name" ]; then
+                l_new_array+=("$l_item")
+            fi
+        done
+    fi
     
     # Update the global array
-    ZEN_MAP_DATA=("${l_new_array[@]}")
+    if [ ${#l_new_array[@]} -gt 0 ]; then
+        ZEN_MAP_DATA=("${l_new_array[@]}")
+    else
+        ZEN_MAP_DATA=()
+    fi
 }
 
 # Print all key-value pairs in the map (for debugging)
@@ -792,16 +822,18 @@ zen_map_print() {
     zen_echo_h3 "Map: $l_map_name"
     
     # Print all key-value pairs for this map
-    for l_item in "${ZEN_MAP_DATA[@]}"; do
-        local l_item_map="${l_item%%${ZEN_MAP_DELIMITER}*}"
-        if [ "$l_item_map" = "$l_map_name" ]; then
-            local l_remaining="${l_item#*${ZEN_MAP_DELIMITER}}"
-            local l_key="${l_remaining%%${ZEN_MAP_DELIMITER}*}"
-            local l_value="${l_remaining#*${ZEN_MAP_DELIMITER}}"
-            echo "  $l_key -> $l_value"
-            l_count=$((l_count + 1))
-        fi
-    done
+    if [ ${#ZEN_MAP_DATA[@]} -gt 0 ]; then
+        for l_item in "${ZEN_MAP_DATA[@]}"; do
+            local l_item_map="${l_item%%${ZEN_MAP_DELIMITER}*}"
+            if [ "$l_item_map" = "$l_map_name" ]; then
+                local l_remaining="${l_item#*${ZEN_MAP_DELIMITER}}"
+                local l_key="${l_remaining%%${ZEN_MAP_DELIMITER}*}"
+                local l_value="${l_remaining#*${ZEN_MAP_DELIMITER}}"
+                echo "  $l_key -> $l_value"
+                l_count=$((l_count + 1))
+            fi
+        done
+    fi
     
     if [ "$l_count" -eq 0 ]; then
         echo "  (empty)"
@@ -2766,7 +2798,7 @@ _zen_update_from_github() {
     local l_backup_path="${l_script_path}.bak"
     
     # Check if ZEN_AUTO_UPDATE is set to true or 1
-    if [[ "$ZEN_AUTO_UPDATE" == "true" || "$ZEN_AUTO_UPDATE" == "1" ]]; then
+    if [[ "${ZEN_AUTO_UPDATE:-}" == "true" || "${ZEN_AUTO_UPDATE:-}" == "1" ]]; then
         zen_echo_h3 "ZEN_AUTO_UPDATE is enabled. Checking for updates..."
 
         # Create a backup of the current file
@@ -2804,7 +2836,7 @@ _zen_update_from_github() {
 
 # Check for updates on library load if ZEN_AUTO_UPDATE is set
 _zen_update_check_on_load() {
-    if [[ "$ZEN_AUTO_UPDATE" == "true" || "$ZEN_AUTO_UPDATE" == "1" ]]; then
+    if [[ "${ZEN_AUTO_UPDATE:-}" == "true" || "${ZEN_AUTO_UPDATE:-}" == "1" ]]; then
         _zen_update_from_github
     fi
 }

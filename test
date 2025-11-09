@@ -1,0 +1,11 @@
+#!/bin/bash
+# zenbal - Bash Scripting Library test
+
+# Get script directory (works even if script is called from another directory)
+DIR_SCRIPT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source "$DIR_SCRIPT/zenbal"
+
+zen_pkg_upgrade
+zen_ensure_command "curl"
+
+zen_echo_success "All tests passed!"

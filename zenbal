@@ -31,7 +31,17 @@ ZEN_SC_FG_INVERTED="${ZEN_SC_ESC}7m"
 ## zen_echo
 ##====================================================
 
-# Repeat given string the specified number of times
+# Repeat a string a specified number of times
+# Prints the string multiple times without newlines between repetitions
+# Globals:
+#   None
+# Arguments:
+#   1 - Number of repetitions (required)
+#   2 - String to repeat (required)
+# Outputs:
+#   The repeated string to stdout
+# Returns:
+#   None
 zen_echo_repeat() {
     local l_range
     local l_i
@@ -39,74 +49,148 @@ zen_echo_repeat() {
 	for l_i in $l_range ; do echo -n "$2"; done
 }
 
+# Print text in red color
 zen_echo_red() {
     echo -e "${ZEN_SC_FG_RED}${1}${ZEN_SC_RESET_ALL}"
 }
+
+# Print text in green color
 zen_echo_green() {
     echo -e "${ZEN_SC_FG_GREEN}${1}${ZEN_SC_RESET_ALL}"
 }
+
+# Print text in yellow color
 zen_echo_yellow() {
     echo -e "${ZEN_SC_FG_YELLOW}${1}${ZEN_SC_RESET_ALL}"
 }
+
+# Print text in blue color
 zen_echo_blue() {
     echo -e "${ZEN_SC_FG_BLUE}${1}${ZEN_SC_RESET_ALL}"
 }
+
+# Print text in magenta color
 zen_echo_magenta() {
     echo -e "${ZEN_SC_FG_MAGENTA}${1}${ZEN_SC_RESET_ALL}"
 }
+
+# Print text in cyan color
 zen_echo_cyan() {
-    echo -e "${ZEN_SC_FG_cyan}${1}${ZEN_SC_RESET_ALL}"
+    echo -e "${ZEN_SC_FG_CYAN}${1}${ZEN_SC_RESET_ALL}"
 }
 
+# Print text as header level 1 (inverted style)
 zen_echo_h1() {
   echo -e "\n${ZEN_SC_FG_INVERTED}${1}${ZEN_SC_RESET_ALL}"
 }
+
+# Print text as header level 2 (underlined style)
 zen_echo_h2() {
   echo -e "\n${ZEN_SC_FG_UNDERLINE}${1}${ZEN_SC_RESET_ALL}"
 }
+
+# Print text as header level 3 (italic style)
 zen_echo_h3() {
   echo -e "\n${ZEN_SC_FG_ITALIC}${1}${ZEN_SC_RESET_ALL}"
 }
 
+# Print progress message
+zen_echo_progress() {
+    zen_echo_cyan "\n⏳ $*"
+}
+
+# Print success message
 zen_echo_success() {
-    zen_echo_green "\n$1"
+    zen_echo_green "✓ $1"
 }
 
-zen_echo_panic() {
-    zen_echo_red "\n$1"
-    exit 1
-}
-
-zen_echo_error() {
-    zen_echo_red "\n$1"
-}
-
+# Print warning message in yellow
 zen_echo_warning() {
-    zen_echo_yellow "\n$1"
+    zen_echo_yellow "⚠️ $1"
+}
+
+# Print error message in red without exiting
+zen_echo_error() {
+    zen_echo_red "$1"
+}
+
+# Print error message and exit with code 1
+zen_echo_panic() {
+    zen_echo_red "\n❌ $1"
+    exit 1
 }
 
 ##====================================================
 ## zen_string
 ##====================================================
 
+# Check if string begins with specified prefix
+# Globals:
+#   None
+# Arguments:
+#   1 - Prefix to check for
+#   2 - String to test
+# Outputs:
+#   None
+# Returns:
+#   0 (true) if string starts with prefix, 1 (false) otherwise
 zen_string_beginswith() { 
     case $2 in "$1"*) true;; *) false;; esac; 
 }
 
+# Split string by delimiter and return parts
+# Globals:
+#   ZEN_FUNC_RESULT - Contains the split string with newlines
+# Arguments:
+#   1 - String to split
+#   2 - Delimiter character
+# Outputs:
+#   None
+# Returns:
+#   Split string parts separated by newlines (in ZEN_FUNC_RESULT)
 zen_string_explode() {
     local l
     l=$(echo "$1" | tr "$2" "\n")
     ZEN_FUNC_RESULT=$(echo "$l")
 }
 
+# Convert string to lowercase
+# Globals:
+#   ZEN_FUNC_RESULT - Contains the lowercase string
+# Arguments:
+#   1 - String to convert
+# Outputs:
+#   None
+# Returns:
+#   Lowercase version of input string (in ZEN_FUNC_RESULT)
 zen_string_lower() {
     ZEN_FUNC_RESULT=$(echo "$1" | tr -s "[:upper:]" "[:lower:]")
 }
 
+# Convert string to uppercase
+# Globals:
+#   ZEN_FUNC_RESULT - Contains the uppercase string
+# Arguments:
+#   1 - String to convert
+# Outputs:
+#   None
+# Returns:
+#   Uppercase version of input string (in ZEN_FUNC_RESULT)
 zen_string_upper() {
     ZEN_FUNC_RESULT=$(echo "$1" | tr -s "[:upper:]" "[:lower:]")
 }
 
+# Replace all occurrences of substring in string
+# Globals:
+#   ZEN_FUNC_RESULT - Contains the string with replacements
+# Arguments:
+#   1 - Original string
+#   2 - Substring to replace
+#   3 - Replacement substring
+# Outputs:
+#   None
+# Returns:
+#   String with all occurrences replaced (in ZEN_FUNC_RESULT)
 zen_string_replace_all() {
     ZEN_FUNC_RESULT=${1//$2/$3}
 }
@@ -225,6 +309,17 @@ gen_random_string_time_based() {
 ## zen_file
 ##====================================================
 
+# Setup temporary directory path for zenbal operations
+# Creates temporary directory if it doesn't exist and sets ZEN_PATH_TMP
+# Globals:
+#   ZEN_PATH_TMP - Temporary directory path (set by function)
+#   ZEN_PATH_TMP_PREFIX - Prefix for temp directory (optional, defaults to "zen")
+# Arguments:
+#   None
+# Outputs:
+#   None
+# Returns:
+#   Sets ZEN_PATH_TMP global variable
 zen_file_setup_path_tmp() {
     if [[ -z "$ZEN_PATH_TMP" ]]; then
         ZEN_PATH_TMP_PREFIX="zen"
@@ -237,7 +332,16 @@ zen_file_setup_path_tmp() {
     fi
 }
 
-## Create a unique temporary file name
+# Create a unique temporary file name
+# Generates a random filename in the temporary directory
+# Globals:
+#   ZEN_FUNC_RESULT - Contains the generated temporary file path
+# Arguments:
+#   None
+# Outputs:
+#   None
+# Returns:
+#   Full path to unique temporary file (in ZEN_FUNC_RESULT)
 zen_file_tmp_name() {
     zen_file_setup_path_tmp
     zen_random_int30 16 128
@@ -245,20 +349,40 @@ zen_file_tmp_name() {
     ZEN_FUNC_RESULT="${ZEN_PATH_TMP}/${ZEN_FUNC_RESULT}.tmp"
 }
 
-## Replace string in a file
+# Replace string in a file using sed
+# Creates temporary file for the operation to ensure safety
+# Globals:
+#   None
+# Arguments:
+#   1 - File path to modify
+#   2 - String to find (regex pattern)
+#   3 - Replacement string
+# Outputs:
+#   None
+# Returns:
+#   Modifies the specified file in-place
 zen_file_replace_string() {
     zen_file_tmp_name
     sed "s/$2/$3/g" "$1" > "$ZEN_FUNC_RESULT" && mv "$ZEN_FUNC_RESULT" "$1"
 }
 
-## Read the specified file content
+# Read the first line of a file into ZEN_FUNC_RESULT
+# Provides feedback during operation and panics if file is empty
+# Globals:
+#   ZEN_FUNC_RESULT - Contains the first line of the file
+# Arguments:
+#   1 - File path to read (required)
+# Outputs:
+#   Status messages during operation
+# Returns:
+#   First line content in ZEN_FUNC_RESULT, exits on failure
 zen_file_read_content() {
-    echo "Reading file $1"
+    zen_echo_progress "Reading file $1"
     ZEN_FUNC_RESULT=`head -n 1 "$1"`
     if [[ "${ZEN_FUNC_RESULT}" = "" ]]; then
         zen_echo_panic "Failed reading the $1 file!"
     else
-        echo "File successfully read."
+        zen_echo_success "File successfully read."
     fi
 }
 
@@ -266,14 +390,32 @@ zen_file_read_content() {
 ## zen_assert
 ##====================================================
 
-# Assert the specified directory exists
+# Assert that a file exists at the specified path
+# Panics with error message if file doesn't exist
+# Globals:
+#   None
+# Arguments:
+#   1 - File path to check
+# Outputs:
+#   Error message if file doesn't exist
+# Returns:
+#   Exits script if assertion fails
 zen_assert_file_exist() {
     if [ ! -f "$1" ]; then
         zen_echo_panic "File $1 does not exist! Aborting..."
     fi
 }
 
-# Assert the specified directory exists
+# Assert that a directory exists at the specified path
+# Panics with error message if directory doesn't exist
+# Globals:
+#   None
+# Arguments:
+#   1 - Directory path to check
+# Outputs:
+#   Error message if directory doesn't exist
+# Returns:
+#   Exits script if assertion fails
 zen_assert_directory_exist() {
     if [ ! -d "$1" ]; then
         zen_echo_panic "Directory $1 does not exist! Aborting..."
@@ -302,10 +444,384 @@ zen_erlang_random_short_node_name() {
 }
 
 ##====================================================
+## zen_map
+##====================================================
+
+# Portable map implementation using arrays and functions
+# Maps are stored as arrays with key-value pairs separated by a delimiter
+# Internal delimiter used to separate keys from values
+ZEN_MAP_DELIMITER="::ZEN_MAP_SEP::"
+
+# Global array to store all map data
+declare -a ZEN_MAP_DATA
+
+# Initialize a new map
+# Globals:
+#   ZEN_MAP_DATA - Global array storing map data
+# Arguments:
+#   1 - Map name
+# Outputs:
+#   None
+# Returns:
+#   None
+zen_map_init() {
+    if [ -z "$1" ]; then
+        zen_echo_panic "zen_map_init: Map name is required"
+    fi
+    # Clear any existing data for this map
+    zen_map_clear "$1"
+}
+
+# Set a key-value pair in the map
+# Globals:
+#   ZEN_MAP_DATA - Global array storing map data
+# Arguments:
+#   1 - Map name
+#   2 - Key
+#   3 - Value
+# Outputs:
+#   None
+# Returns:
+#   None
+zen_map_set() {
+    local l_map_name="$1"
+    local l_key="$2"
+    local l_value="$3"
+    local l_full_key="${l_map_name}${ZEN_MAP_DELIMITER}${l_key}"
+    local l_entry="${l_full_key}${ZEN_MAP_DELIMITER}${l_value}"
+    local l_found=false
+    local l_new_array=()
+    local l_item
+    
+    if [ -z "$l_map_name" ] || [ -z "$l_key" ]; then
+        zen_echo_panic "zen_map_set: Map name and key are required"
+    fi
+    
+    # Look for existing entry and replace if found
+    for l_item in "${ZEN_MAP_DATA[@]}"; do
+        local l_item_map="${l_item%%${ZEN_MAP_DELIMITER}*}"
+        local l_remaining="${l_item#*${ZEN_MAP_DELIMITER}}"
+        local l_item_key="${l_remaining%%${ZEN_MAP_DELIMITER}*}"
+        local l_item_full_key="${l_item_map}${ZEN_MAP_DELIMITER}${l_item_key}"
+        
+        if [ "$l_item_full_key" = "$l_full_key" ]; then
+            l_new_array+=("$l_entry")
+            l_found=true
+        else
+            l_new_array+=("$l_item")
+        fi
+    done
+    
+    # If key wasn't found, add new entry
+    if [ "$l_found" = false ]; then
+        l_new_array+=("$l_entry")
+    fi
+    
+    # Update the global array
+    ZEN_MAP_DATA=("${l_new_array[@]}")
+}
+
+# Get a value from the map by key
+# Globals:
+#   ZEN_FUNC_RESULT - Contains the retrieved value
+#   ZEN_MAP_DATA - Global array storing map data
+# Arguments:
+#   1 - Map name
+#   2 - Key
+# Outputs:
+#   None
+# Returns:
+#   The value associated with the key (in ZEN_FUNC_RESULT)
+zen_map_get() {
+    local l_map_name="$1"
+    local l_key="$2"
+    local l_full_key="${l_map_name}${ZEN_MAP_DELIMITER}${l_key}"
+    local l_item
+    
+    ZEN_FUNC_RESULT=""
+    
+    if [ -z "$l_map_name" ] || [ -z "$l_key" ]; then
+        zen_echo_panic "zen_map_get: Map name and key are required"
+    fi
+    
+    # Look for the key in global array
+    for l_item in "${ZEN_MAP_DATA[@]}"; do
+        local l_item_map="${l_item%%${ZEN_MAP_DELIMITER}*}"
+        local l_remaining="${l_item#*${ZEN_MAP_DELIMITER}}"
+        local l_item_key="${l_remaining%%${ZEN_MAP_DELIMITER}*}"
+        local l_item_full_key="${l_item_map}${ZEN_MAP_DELIMITER}${l_item_key}"
+        
+        if [ "$l_item_full_key" = "$l_full_key" ]; then
+            local l_temp="${l_remaining#*${ZEN_MAP_DELIMITER}}"
+            ZEN_FUNC_RESULT="$l_temp"
+            return 0
+        fi
+    done
+}
+
+# Check if a key exists in the map
+# Globals:
+#   ZEN_FUNC_RESULT - Contains true/false
+#   ZEN_MAP_DATA - Global array storing map data
+# Arguments:
+#   1 - Map name
+#   2 - Key
+# Outputs:
+#   None
+# Returns:
+#   "true" if key exists, "false" otherwise (in ZEN_FUNC_RESULT)
+zen_map_has_key() {
+    local l_map_name="$1"
+    local l_key="$2"
+    local l_full_key="${l_map_name}${ZEN_MAP_DELIMITER}${l_key}"
+    local l_item
+    
+    ZEN_FUNC_RESULT="false"
+    
+    if [ -z "$l_map_name" ] || [ -z "$l_key" ]; then
+        zen_echo_panic "zen_map_has_key: Map name and key are required"
+    fi
+    
+    # Look for the key in global array
+    for l_item in "${ZEN_MAP_DATA[@]}"; do
+        local l_item_map="${l_item%%${ZEN_MAP_DELIMITER}*}"
+        local l_remaining="${l_item#*${ZEN_MAP_DELIMITER}}"
+        local l_item_key="${l_remaining%%${ZEN_MAP_DELIMITER}*}"
+        local l_item_full_key="${l_item_map}${ZEN_MAP_DELIMITER}${l_item_key}"
+        
+        if [ "$l_item_full_key" = "$l_full_key" ]; then
+            ZEN_FUNC_RESULT="true"
+            return 0
+        fi
+    done
+}
+
+# Remove a key-value pair from the map
+# Globals:
+#   ZEN_MAP_DATA - Global array storing map data
+# Arguments:
+#   1 - Map name
+#   2 - Key
+# Outputs:
+#   None
+# Returns:
+#   None
+zen_map_remove() {
+    local l_map_name="$1"
+    local l_key="$2"
+    local l_full_key="${l_map_name}${ZEN_MAP_DELIMITER}${l_key}"
+    local l_new_array=()
+    local l_item
+    
+    if [ -z "$l_map_name" ] || [ -z "$l_key" ]; then
+        zen_echo_panic "zen_map_remove: Map name and key are required"
+    fi
+    
+    # Copy all items except the one with matching key
+    for l_item in "${ZEN_MAP_DATA[@]}"; do
+        local l_item_map="${l_item%%${ZEN_MAP_DELIMITER}*}"
+        local l_remaining="${l_item#*${ZEN_MAP_DELIMITER}}"
+        local l_item_key="${l_remaining%%${ZEN_MAP_DELIMITER}*}"
+        local l_item_full_key="${l_item_map}${ZEN_MAP_DELIMITER}${l_item_key}"
+        
+        if [ "$l_item_full_key" != "$l_full_key" ]; then
+            l_new_array+=("$l_item")
+        fi
+    done
+    
+    # Update the global array
+    ZEN_MAP_DATA=("${l_new_array[@]}")
+}
+
+# Get all keys from the map
+# Globals:
+#   ZEN_FUNC_RESULT - Contains space-separated list of keys
+#   ZEN_MAP_DATA - Global array storing map data
+# Arguments:
+#   1 - Map name
+# Outputs:
+#   None
+# Returns:
+#   Space-separated list of keys (in ZEN_FUNC_RESULT)
+zen_map_keys() {
+    local l_map_name="$1"
+    local l_keys=""
+    local l_item
+    
+    ZEN_FUNC_RESULT=""
+    
+    if [ -z "$l_map_name" ]; then
+        zen_echo_panic "zen_map_keys: Map name is required"
+    fi
+    
+    # Extract keys for this map from global array
+    for l_item in "${ZEN_MAP_DATA[@]}"; do
+        local l_item_map="${l_item%%${ZEN_MAP_DELIMITER}*}"
+        if [ "$l_item_map" = "$l_map_name" ]; then
+            local l_remaining="${l_item#*${ZEN_MAP_DELIMITER}}"
+            local l_key="${l_remaining%%${ZEN_MAP_DELIMITER}*}"
+            if [ -z "$l_keys" ]; then
+                l_keys="$l_key"
+            else
+                l_keys="$l_keys $l_key"
+            fi
+        fi
+    done
+    
+    ZEN_FUNC_RESULT="$l_keys"
+}
+
+# Get all values from the map
+# Globals:
+#   ZEN_FUNC_RESULT - Contains space-separated list of values
+#   ZEN_MAP_DATA - Global array storing map data
+# Arguments:
+#   1 - Map name
+# Outputs:
+#   None
+# Returns:
+#   Space-separated list of values (in ZEN_FUNC_RESULT)
+zen_map_values() {
+    local l_map_name="$1"
+    local l_values=""
+    local l_item
+    
+    ZEN_FUNC_RESULT=""
+    
+    if [ -z "$l_map_name" ]; then
+        zen_echo_panic "zen_map_values: Map name is required"
+    fi
+    
+    # Extract values for this map from global array
+    for l_item in "${ZEN_MAP_DATA[@]}"; do
+        local l_item_map="${l_item%%${ZEN_MAP_DELIMITER}*}"
+        if [ "$l_item_map" = "$l_map_name" ]; then
+            local l_remaining="${l_item#*${ZEN_MAP_DELIMITER}}"
+            local l_value="${l_remaining#*${ZEN_MAP_DELIMITER}}"
+            if [ -z "$l_values" ]; then
+                l_values="$l_value"
+            else
+                l_values="$l_values $l_value"
+            fi
+        fi
+    done
+    
+    ZEN_FUNC_RESULT="$l_values"
+}
+
+# Get the size (number of key-value pairs) of the map
+# Globals:
+#   ZEN_FUNC_RESULT - Contains the size as integer
+#   ZEN_MAP_DATA - Global array storing map data
+# Arguments:
+#   1 - Map name
+# Outputs:
+#   None
+# Returns:
+#   Number of key-value pairs (in ZEN_FUNC_RESULT)
+zen_map_size() {
+    local l_map_name="$1"
+    local l_count=0
+    local l_item
+    
+    ZEN_FUNC_RESULT=0
+    
+    if [ -z "$l_map_name" ]; then
+        zen_echo_panic "zen_map_size: Map name is required"
+    fi
+    
+    # Count entries for this map in global array
+    for l_item in "${ZEN_MAP_DATA[@]}"; do
+        local l_item_map="${l_item%%${ZEN_MAP_DELIMITER}*}"
+        if [ "$l_item_map" = "$l_map_name" ]; then
+            l_count=$((l_count + 1))
+        fi
+    done
+    
+    ZEN_FUNC_RESULT="$l_count"
+}
+
+# Clear all entries from the map
+# Globals:
+#   ZEN_MAP_DATA - Global array storing map data
+# Arguments:
+#   1 - Map name
+# Outputs:
+#   None
+# Returns:
+#   None
+zen_map_clear() {
+    local l_map_name="$1"
+    local l_new_array=()
+    local l_item
+    
+    if [ -z "$l_map_name" ]; then
+        zen_echo_panic "zen_map_clear: Map name is required"
+    fi
+    
+    # Copy all items except those belonging to this map
+    for l_item in "${ZEN_MAP_DATA[@]}"; do
+        local l_item_map="${l_item%%${ZEN_MAP_DELIMITER}*}"
+        if [ "$l_item_map" != "$l_map_name" ]; then
+            l_new_array+=("$l_item")
+        fi
+    done
+    
+    # Update the global array
+    ZEN_MAP_DATA=("${l_new_array[@]}")
+}
+
+# Print all key-value pairs in the map (for debugging)
+# Globals:
+#   ZEN_MAP_DATA - Global array storing map data
+# Arguments:
+#   1 - Map name
+# Outputs:
+#   Prints each key-value pair
+# Returns:
+#   None
+zen_map_print() {
+    local l_map_name="$1"
+    local l_item
+    local l_count=0
+    
+    if [ -z "$l_map_name" ]; then
+        zen_echo_panic "zen_map_print: Map name is required"
+    fi
+    
+    zen_echo_h3 "Map: $l_map_name"
+    
+    # Print all key-value pairs for this map
+    for l_item in "${ZEN_MAP_DATA[@]}"; do
+        local l_item_map="${l_item%%${ZEN_MAP_DELIMITER}*}"
+        if [ "$l_item_map" = "$l_map_name" ]; then
+            local l_remaining="${l_item#*${ZEN_MAP_DELIMITER}}"
+            local l_key="${l_remaining%%${ZEN_MAP_DELIMITER}*}"
+            local l_value="${l_remaining#*${ZEN_MAP_DELIMITER}}"
+            echo "  $l_key -> $l_value"
+            l_count=$((l_count + 1))
+        fi
+    done
+    
+    if [ "$l_count" -eq 0 ]; then
+        echo "  (empty)"
+    fi
+}
+
+##====================================================
 ## zen_command
 ##====================================================
 
-# Check to see if the specified shell command exist
+# Check if a command exists in the system PATH
+# Uses command -v to check for command availability
+# Globals:
+#   ZEN_FUNC_RESULT - Set to "true" if command exists, "false" otherwise
+# Arguments:
+#   1 - Command name to check
+# Outputs:
+#   None
+# Returns:
+#   Result in ZEN_FUNC_RESULT (true/false)
 zen_command_exist() {
     local l
     l=$(command -v "$1")
@@ -320,7 +836,17 @@ zen_command_exist() {
 ## zen_net
 ##====================================================
 
-# Download the specified url using curl (prefered method) or wget
+# Download URL to specified file using curl or wget
+# Prefers curl but falls back to wget if curl is not available
+# Globals:
+#   ZEN_FUNC_RESULT - Contains the output of the download command
+# Arguments:
+#   1 - URL to download (required)
+#   2 - Output file path (required)
+# Outputs:
+#   Error messages if parameters missing or download tools unavailable
+# Returns:
+#   Download command result in ZEN_FUNC_RESULT
 zen_net_download_url() {
     local l_url
     if [ -z "$1" ]; then
@@ -344,20 +870,1768 @@ zen_net_download_url() {
     fi
 }
 
-# Download the specified url if output file does not exist otherwise do nothing
+# Download URL only if the output file doesn't exist
+# Conditional download that skips if target file already present
+# Globals:
+#   None
+# Arguments:
+#   1 - URL to download (required)
+#   2 - Output file path (required)
+# Outputs:
+#   Information message when downloading
+# Returns:
+#   Downloads file if it doesn't exist, otherwise does nothing
 zen_net_download_url_if_file_not_found() {
     if [ ! -f "$2" ]; then
-        echo "File $2 does not exist. Downloading from ${1}..."
+        zen_echo_progress "File $2 does not exist. Downloading from ${1}..."
         zen_net_download_url "$1" "$2"
     fi
 }
 
 ##====================================================
-## zen_environment
+## zen_ensure
 ##====================================================
 
-# Detect environment
-zen_environment_detect() {
+# Ensure a command exists in the system PATH
+# Checks if command is available and panics if not found
+# Globals:
+#   ZEN_FUNC_RESULT - Used internally by zen_command_exist
+# Arguments:
+#   1 - Command name to check (required)
+#   2 - Display name for messages (optional, defaults to command name)
+# Outputs:
+#   Status messages during checking process
+# Returns:
+#   0 if command exists, exits script via zen_echo_panic if not found
+zen_ensure_command() {
+    local l_cmd="$1"
+    local l_display_name="${2:-$l_cmd}"
+
+    if [[ -z "$l_cmd" ]]; then
+        zen_echo_panic "Usage: zen_ensure_command <command_name> [display_name]"
+    fi
+
+    zen_echo_progress "Checking for $l_display_name..."
+
+    zen_command_exist "$l_cmd"
+    if [[ "$ZEN_FUNC_RESULT" == "true" ]]; then
+        zen_echo_success "$l_display_name is installed."
+        return 0
+    fi
+
+    zen_pkg_provides_command "$l_cmd"
+    if [[ -z "$ZEN_FUNC_RESULT" ]]; then
+        zen_echo_panic "$l_display_name is not installed and " \
+        "I can't find a package that provides it. " \
+        "Please install it manually."
+    fi
+    zen_pkg_install "$ZEN_FUNC_RESULT"
+}
+
+# Ensure Homebrew package (formula or cask) is installed
+# Checks if package exists and installs it if missing, panics on any errors
+# Globals:
+#   None
+# Arguments:
+#   1 - Package type: "formula" or "cask" (required)
+#   2 - Package name to install (required)
+#   3 - Display name for messages (optional, defaults to package name)
+# Outputs:
+#   Status messages during checking and installation process
+# Returns:
+#   0 on success (package already installed or successfully installed)
+#   Exits script on any error via zen_echo_panic
+zen_ensure_brew_app() {
+  local l_pkg_type="$1"
+  local l_pkg_name="$2"
+  local l_display_name="${3:-$l_pkg_name}"
+
+  if [[ -z "$l_pkg_type" || -z "$l_pkg_name" ]]; then
+    zen_echo_panic "Usage: zen_ensure_brew_app <type: formula|cask> <package_name> [display_name]"
+  fi
+
+  if [[ "$l_pkg_type" != "formula" && "$l_pkg_type" != "cask" ]]; then
+    zen_echo_panic "Type must be 'formula' or 'cask'"
+  fi
+
+  zen_echo_progress "Checking for $l_display_name..."
+
+  if [[ "$l_pkg_type" == "formula" ]]; then
+    if brew list --formula "$l_pkg_name" &>/dev/null; then
+      zen_echo_success "$l_display_name is already installed."
+      return 0
+    fi
+  else
+    if brew list --cask "$l_pkg_name" &>/dev/null; then
+      zen_echo_success "$l_display_name is already installed."
+      return 0
+    fi
+  fi
+
+  zen_echo_yellow "Installing $l_display_name..."
+  if [[ "$l_pkg_type" == "formula" ]]; then
+    if brew info --formula "$l_pkg_name" >/dev/null 2>&1; then
+      brew install "$l_pkg_name"
+    else
+      zen_echo_panic "No formula named $l_pkg_name"
+    fi
+  else
+    if brew info --cask "$l_pkg_name" >/dev/null 2>&1; then
+      brew install --cask "$l_pkg_name"
+    else
+      zen_echo_panic "No cask named $l_pkg_name"
+    fi
+  fi
+
+  zen_echo_success "$l_display_name installed successfully."
+}
+
+# Ensure asdf plugin is installed and optionally set as default
+# This function will add the asdf plugin if not present, install the specified
+# version (or latest if not specified), and optionally set it as user default
+# Globals:
+#   None
+# Arguments:
+#   1 - Plugin name (required)
+#   2 - Version to install (optional, defaults to "latest")
+#   3 - Set as user default: "true" or "false" (optional, defaults to "false")
+#   4 - Display name for messages (optional, defaults to plugin name)
+# Outputs:
+#   Status messages about plugin installation and configuration
+# Returns:
+#   0 on success, 1 on failure (exits on critical errors)
+zen_ensure_asdf_plugin() {
+  local l_plugin="$1"
+  local l_version="$2"
+  local l_default="${3:-false}"
+  local l_display_name="${4:-$l_plugin}"
+
+  if [[ -z "$l_plugin" ]]; then
+    zen_echo_panic "Usage: zen_ensure_asdf_plugin <plugin_name> [version] [set_default] [display_name]"
+  fi
+
+  # Ensure asdf is available
+  if ! command -v asdf >/dev/null 2>&1; then
+    zen_echo_panic "asdf not found. Please install asdf first (e.g., via Homebrew)."
+  fi
+
+  zen_echo_h3 "Checking asdf plugin: $l_display_name"
+
+  # Add plugin if missing
+  if ! asdf plugin list | grep -q "^$l_plugin\$"; then
+    zen_echo_progress "Adding asdf plugin: $l_plugin"
+    asdf plugin add "$l_plugin"
+  else
+    zen_echo_success "asdf plugin '$l_plugin' already added."
+  fi
+
+  # Determine version if not provided
+  if [[ -z "$l_version" || "$l_version" == "latest" ]]; then
+    # pick last non-empty line from `asdf list all` (some plugins emit trailing blank lines)
+    l_version=$(asdf list all "$l_plugin" | awk 'NF' | tail -n 1)
+    if [[ -z "$l_version" ]]; then
+      zen_echo_panic "Unable to determine latest version for $l_plugin"
+    fi
+    zen_echo_info "Using latest available version: $l_version"
+  fi
+
+  # Install version if missing
+  if ! asdf list "$l_plugin" | grep -q "$l_version"; then
+    zen_echo_progress "Installing $l_display_name version $l_version..."
+    asdf install "$l_plugin" "$l_version"
+  else
+    zen_echo_success "$l_display_name version $l_version already installed."
+  fi
+
+  # Set as the user's default (previously `asdf global` behavior) only if requested
+  if [[ "$l_default" == "true" ]]; then
+    if asdf help 2>/dev/null | grep -qw set; then
+      if asdf set --home "$l_plugin" "$l_version"; then
+        zen_echo_success "Set $l_display_name user default version to $l_version (using: asdf set --home)"
+      else
+        zen_echo_error "Failed to set $l_display_name version with 'asdf set --home'."
+        return 1
+      fi
+    else
+      zen_echo_error "asdf does not support the 'set' subcommand. Please update asdf."
+      return 1
+    fi
+  fi
+}
+
+##====================================================
+## zen_pkg
+##====================================================
+
+zen_pkg_upgrade() {
+    zen_os_function "_zen_pkg_upgrade"
+}
+
+_zen_pkg_upgrade_debian() {
+    sudo apt-get update
+    sudo apt-get upgrade -y
+}
+
+_zen_pkg_upgrade_redhat() {
+    sudo yum update -y
+}
+
+_zen_pkg_upgrade_suse() {
+    sudo zypper update -y
+}
+
+_zen_pkg_upgrade_mandrake() {
+    sudo urpmi --auto-select
+}
+
+_zen_pkg_upgrade_macos() {
+    if command -v brew >/dev/null 2>&1; then
+        brew update
+        brew upgrade
+    else
+        zen_echo_panic "Homebrew is not installed! Please install Homebrew package manager first."
+    fi
+}
+
+_zen_pkg_upgrade_arch() {
+    if command -v pacman >/dev/null 2>&1; then
+        sudo pacman -Syu --noconfirm
+    else
+        zen_echo_panic "pacman is not available! This function requires Arch Linux or compatible system."
+    fi
+}
+
+_zen_pkg_upgrade_alpine() {
+    if command -v apk >/dev/null 2>&1; then
+        sudo apk update
+        sudo apk upgrade
+    else
+        zen_echo_panic "apk is not available! This function requires Alpine Linux."
+    fi
+}
+
+_zen_pkg_upgrade_gentoo() {
+    if command -v emerge >/dev/null 2>&1; then
+        sudo emerge --sync
+        sudo emerge -uDN @world
+    else
+        zen_echo_panic "emerge is not available! This function requires Gentoo Linux."
+    fi
+}
+
+_zen_pkg_upgrade_void() {
+    if command -v xbps-install >/dev/null 2>&1; then
+        sudo xbps-install -Su
+    else
+        zen_echo_panic "xbps-install is not available! This function requires Void Linux."
+    fi
+}
+
+_zen_pkg_upgrade_nixos() {
+    if command -v nixos-rebuild >/dev/null 2>&1; then
+        sudo nixos-rebuild switch --upgrade
+    elif command -v nix-env >/dev/null 2>&1; then
+        nix-env -u '*'
+    else
+        zen_echo_panic "nixos-rebuild or nix-env are not available! This function requires NixOS or Nix package manager."
+    fi
+}
+
+_zen_pkg_upgrade_linux() {
+    _zen_pkg_upgrade_panic_message
+}
+
+_zen_pkg_upgrade_unknown() {
+    _zen_pkg_upgrade_panic_message
+}
+
+_zen_pkg_upgrade_panic_message() {
+    zen_echo_warning "Unknown OS - unable to determine upgrade method."
+    zen_echo_panic "Please upgrade packages manually using your system's package manager."
+}
+
+zen_pkg_install() {
+    zen_os_function "_zen_pkg_install" "$1"
+}
+
+_zen_pkg_install_debian() {
+    sudo apt-get update
+    sudo apt-get install "$1" -y
+}
+
+_zen_pkg_install_redhat() {
+    if command -v dnf >/dev/null 2>&1; then
+        sudo dnf install "$1" -y
+    elif command -v yum >/dev/null 2>&1; then
+        sudo yum install "$1" -y
+    else
+        zen_echo_panic "Neither DNF nor YUM package manager found!"
+    fi
+}
+
+_zen_pkg_install_suse() {
+    if command -v zypper >/dev/null 2>&1; then
+        sudo zypper install -y "$1"
+    else
+        zen_echo_panic "Zypper package manager not found!"
+    fi
+}
+
+_zen_pkg_install_mandrake() {
+    if command -v urpmi >/dev/null 2>&1; then
+        sudo urpmi "$1"
+    else
+        zen_echo_panic "URPMI package manager not found!"
+    fi
+}
+
+_zen_pkg_install_macos() {
+    if command -v brew >/dev/null 2>&1; then
+        # Check if it's a cask package (GUI applications)
+        if brew search --cask "$1" | grep -q "^$1\$"; then
+            brew install --cask "$1"
+        else
+            brew install "$1"
+        fi
+    else
+        zen_echo_panic "Homebrew is not installed! Please install Homebrew package manager first."
+    fi
+}
+
+_zen_pkg_install_arch() {
+    if command -v pacman >/dev/null 2>&1; then
+        sudo pacman -S --noconfirm "$1"
+    else
+        zen_echo_panic "Pacman package manager not found!"
+    fi
+}
+
+_zen_pkg_install_alpine() {
+    if command -v apk >/dev/null 2>&1; then
+        sudo apk add "$1"
+    else
+        zen_echo_panic "APK package manager not found!"
+    fi
+}
+
+_zen_pkg_install_gentoo() {
+    if command -v emerge >/dev/null 2>&1; then
+        sudo emerge "$1"
+    else
+        zen_echo_panic "Emerge package manager not found!"
+    fi
+}
+
+_zen_pkg_install_void() {
+    if command -v xbps-install >/dev/null 2>&1; then
+        sudo xbps-install -S "$1"
+    else
+        zen_echo_panic "XBPS package manager not found!"
+    fi
+}
+
+_zen_pkg_install_nixos() {
+    if command -v nix-env >/dev/null 2>&1; then
+        nix-env -i "$1"
+    else
+        zen_echo_panic "Nix package manager not found!"
+    fi
+}
+
+_zen_pkg_install_linux() {
+    _zen_pkg_install_panic_message
+}
+
+_zen_pkg_install_unknown() {
+    _zen_pkg_install_panic_message
+}
+
+_zen_pkg_install_panic_message() {
+    zen_echo_warning "Unknown OS - unable to determine installation method."
+    zen_echo_panic "Please install packages manually using your system's package manager."
+}
+
+# Returns the name of the package that provides the specified command
+# Uses OS-specific tools to find which package contains the command
+# Globals:
+#   ZEN_FUNC_RESULT - Contains the package name that provides the command
+# Arguments:
+#   1 - Command name to search for (required)
+# Outputs:
+#   None
+# Returns:
+#   Package name in ZEN_FUNC_RESULT, empty if not found
+zen_pkg_provides_command() {
+    zen_map_has_key "_zen_pkg_by_command" "$1"
+    if [ "$ZEN_FUNC_RESULT" = "false" ]; then
+        ZEN_FUNC_RESULT=""
+        return
+    fi
+    zen_map_get "_zen_pkg_by_command" "$1"
+}
+
+# Initialize package mappings for the current operating system
+# Automatically detects the OS and calls the appropriate OS-specific initialization function
+# This creates a mapping between command names and their corresponding package names
+# Globals:
+#   ZEN_OS_BASED_ON - Used by zen_os_function to determine which OS-specific function to call
+#   Uses zen_map functions to populate _zen_pkg_by_command map
+# Arguments:
+#   None
+# Outputs:
+#   None
+# Returns:
+#   None
+_zen_pkg_init() {
+    zen_map_init "_zen_pkg_by_command"
+    zen_os_function "_zen_pkg_init"
+}
+
+# Initialize package mappings for Debian-based distributions
+# Uses APT package names compatible with Debian, Ubuntu, Mint, Elementary, Pop!_OS, Kali, etc.
+# Populates the command-to-package mapping with Debian/Ubuntu package repository names
+# Globals:
+#   Uses zen_map functions to populate _zen_pkg_by_command map
+# Arguments:
+#   None
+# Outputs:
+#   None
+# Returns:
+#   None
+_zen_pkg_init_debian() {
+    # Essential development tools and basic utilities
+    zen_map_set "_zen_pkg_by_command" "curl" "curl"
+    zen_map_set "_zen_pkg_by_command" "wget" "wget"
+    zen_map_set "_zen_pkg_by_command" "git" "git"
+    zen_map_set "_zen_pkg_by_command" "vim" "vim"
+    zen_map_set "_zen_pkg_by_command" "nano" "nano"
+    zen_map_set "_zen_pkg_by_command" "emacs" "emacs"
+    zen_map_set "_zen_pkg_by_command" "gcc" "gcc"
+    zen_map_set "_zen_pkg_by_command" "g++" "g++"
+    zen_map_set "_zen_pkg_by_command" "make" "make"
+    zen_map_set "_zen_pkg_by_command" "cmake" "cmake"
+    zen_map_set "_zen_pkg_by_command" "python3" "python3"
+    zen_map_set "_zen_pkg_by_command" "python" "python3"
+    zen_map_set "_zen_pkg_by_command" "pip" "python3-pip"
+    zen_map_set "_zen_pkg_by_command" "pip3" "python3-pip"
+    zen_map_set "_zen_pkg_by_command" "node" "nodejs"
+    zen_map_set "_zen_pkg_by_command" "npm" "npm"
+    zen_map_set "_zen_pkg_by_command" "java" "default-jre"
+    zen_map_set "_zen_pkg_by_command" "javac" "default-jdk"
+    zen_map_set "_zen_pkg_by_command" "ruby" "ruby"
+    zen_map_set "_zen_pkg_by_command" "php" "php"
+    zen_map_set "_zen_pkg_by_command" "perl" "perl"
+    zen_map_set "_zen_pkg_by_command" "go" "golang-go"
+    zen_map_set "_zen_pkg_by_command" "rustc" "rustc"
+    zen_map_set "_zen_pkg_by_command" "cargo" "cargo"
+    zen_map_set "_zen_pkg_by_command" "ssh" "openssh-client"
+    zen_map_set "_zen_pkg_by_command" "scp" "openssh-client"
+    zen_map_set "_zen_pkg_by_command" "rsync" "rsync"
+    zen_map_set "_zen_pkg_by_command" "htop" "htop"
+    zen_map_set "_zen_pkg_by_command" "nmap" "nmap"
+    zen_map_set "_zen_pkg_by_command" "zip" "zip"
+    zen_map_set "_zen_pkg_by_command" "unzip" "unzip"
+    zen_map_set "_zen_pkg_by_command" "tar" "tar"
+    zen_map_set "_zen_pkg_by_command" "gzip" "gzip"
+    zen_map_set "_zen_pkg_by_command" "find" "findutils"
+    zen_map_set "_zen_pkg_by_command" "locate" "mlocate"
+    
+    # Core utilities
+    zen_map_set "_zen_pkg_by_command" "which" "debianutils"
+    zen_map_set "_zen_pkg_by_command" "whereis" "util-linux"
+    zen_map_set "_zen_pkg_by_command" "file" "file"
+    zen_map_set "_zen_pkg_by_command" "stat" "coreutils"
+    zen_map_set "_zen_pkg_by_command" "du" "coreutils"
+    zen_map_set "_zen_pkg_by_command" "df" "coreutils"
+    zen_map_set "_zen_pkg_by_command" "mount" "util-linux"
+    zen_map_set "_zen_pkg_by_command" "umount" "util-linux"
+    zen_map_set "_zen_pkg_by_command" "fdisk" "fdisk"
+    zen_map_set "_zen_pkg_by_command" "parted" "parted"
+    zen_map_set "_zen_pkg_by_command" "lsblk" "util-linux"
+    zen_map_set "_zen_pkg_by_command" "blkid" "util-linux"
+    
+    # Text processing
+    zen_map_set "_zen_pkg_by_command" "sed" "sed"
+    zen_map_set "_zen_pkg_by_command" "awk" "gawk"
+    zen_map_set "_zen_pkg_by_command" "grep" "grep"
+    zen_map_set "_zen_pkg_by_command" "sort" "coreutils"
+    zen_map_set "_zen_pkg_by_command" "uniq" "coreutils"
+    zen_map_set "_zen_pkg_by_command" "cut" "coreutils"
+    zen_map_set "_zen_pkg_by_command" "tr" "coreutils"
+    zen_map_set "_zen_pkg_by_command" "head" "coreutils"
+    zen_map_set "_zen_pkg_by_command" "tail" "coreutils"
+    zen_map_set "_zen_pkg_by_command" "wc" "coreutils"
+    zen_map_set "_zen_pkg_by_command" "diff" "diffutils"
+    zen_map_set "_zen_pkg_by_command" "patch" "patch"
+    zen_map_set "_zen_pkg_by_command" "less" "less"
+    zen_map_set "_zen_pkg_by_command" "more" "util-linux"
+    zen_map_set "_zen_pkg_by_command" "cat" "coreutils"
+    zen_map_set "_zen_pkg_by_command" "tac" "coreutils"
+    
+    # Database tools
+    zen_map_set "_zen_pkg_by_command" "mysql" "mysql-client"
+    zen_map_set "_zen_pkg_by_command" "mysqldump" "mysql-client"
+    zen_map_set "_zen_pkg_by_command" "psql" "postgresql-client"
+    zen_map_set "_zen_pkg_by_command" "pg_dump" "postgresql-client"
+    zen_map_set "_zen_pkg_by_command" "sqlite3" "sqlite3"
+    zen_map_set "_zen_pkg_by_command" "redis-cli" "redis-tools"
+    zen_map_set "_zen_pkg_by_command" "mongo" "mongodb-clients"
+    
+    # Media tools
+    zen_map_set "_zen_pkg_by_command" "ffmpeg" "ffmpeg"
+    zen_map_set "_zen_pkg_by_command" "convert" "imagemagick"
+    zen_map_set "_zen_pkg_by_command" "identify" "imagemagick"
+    zen_map_set "_zen_pkg_by_command" "gimp" "gimp"
+    zen_map_set "_zen_pkg_by_command" "vlc" "vlc"
+    zen_map_set "_zen_pkg_by_command" "mplayer" "mplayer"
+    
+    # Container and virtualization
+    zen_map_set "_zen_pkg_by_command" "docker" "docker.io"
+    zen_map_set "_zen_pkg_by_command" "podman" "podman"
+    zen_map_set "_zen_pkg_by_command" "lxc" "lxc"
+    zen_map_set "_zen_pkg_by_command" "vagrant" "vagrant"
+    zen_map_set "_zen_pkg_by_command" "vboxmanage" "virtualbox"
+    
+    # Security tools
+    zen_map_set "_zen_pkg_by_command" "gpg" "gnupg"
+    zen_map_set "_zen_pkg_by_command" "openssl" "openssl"
+    zen_map_set "_zen_pkg_by_command" "ssh-keygen" "openssh-client"
+    zen_map_set "_zen_pkg_by_command" "fail2ban-client" "fail2ban"
+    
+    # Web servers and HTTP tools
+    zen_map_set "_zen_pkg_by_command" "apache2" "apache2"
+    zen_map_set "_zen_pkg_by_command" "nginx" "nginx"
+    zen_map_set "_zen_pkg_by_command" "lighttpd" "lighttpd"
+    zen_map_set "_zen_pkg_by_command" "httpd" "apache2"
+    zen_map_set "_zen_pkg_by_command" "ab" "apache2-utils"
+    zen_map_set "_zen_pkg_by_command" "htpasswd" "apache2-utils"
+    
+    # Mail servers and clients
+    zen_map_set "_zen_pkg_by_command" "sendmail" "sendmail"
+    zen_map_set "_zen_pkg_by_command" "postfix" "postfix"
+    zen_map_set "_zen_pkg_by_command" "dovecot" "dovecot-core"
+    zen_map_set "_zen_pkg_by_command" "mail" "mailutils"
+    zen_map_set "_zen_pkg_by_command" "mailx" "bsd-mailx"
+    zen_map_set "_zen_pkg_by_command" "mutt" "mutt"
+    
+    # DNS servers and tools
+    zen_map_set "_zen_pkg_by_command" "bind9" "bind9"
+    zen_map_set "_zen_pkg_by_command" "named" "bind9"
+    zen_map_set "_zen_pkg_by_command" "dnsmasq" "dnsmasq"
+    zen_map_set "_zen_pkg_by_command" "systemd-resolve" "systemd"
+    
+    # Package managers and build tools
+    zen_map_set "_zen_pkg_by_command" "apt" "apt"
+    zen_map_set "_zen_pkg_by_command" "apt-get" "apt"
+    zen_map_set "_zen_pkg_by_command" "aptitude" "aptitude"
+    zen_map_set "_zen_pkg_by_command" "dpkg" "dpkg"
+    zen_map_set "_zen_pkg_by_command" "snap" "snapd"
+    zen_map_set "_zen_pkg_by_command" "flatpak" "flatpak"
+    zen_map_set "_zen_pkg_by_command" "alien" "alien"
+    zen_map_set "_zen_pkg_by_command" "checkinstall" "checkinstall"
+    
+    # Monitoring and logging
+    zen_map_set "_zen_pkg_by_command" "sar" "sysstat"
+    zen_map_set "_zen_pkg_by_command" "mpstat" "sysstat"
+    zen_map_set "_zen_pkg_by_command" "pidstat" "sysstat"
+    zen_map_set "_zen_pkg_by_command" "iotop" "iotop"
+    zen_map_set "_zen_pkg_by_command" "iftop" "iftop"
+    zen_map_set "_zen_pkg_by_command" "nload" "nload"
+    zen_map_set "_zen_pkg_by_command" "atop" "atop"
+    zen_map_set "_zen_pkg_by_command" "glances" "glances"
+    zen_map_set "_zen_pkg_by_command" "syslog-ng" "syslog-ng"
+    zen_map_set "_zen_pkg_by_command" "rsyslog" "rsyslog"
+    zen_map_set "_zen_pkg_by_command" "logrotate" "logrotate"
+    zen_map_set "_zen_pkg_by_command" "journalctl" "systemd"
+    
+    # Backup and synchronization
+    zen_map_set "_zen_pkg_by_command" "rsnapshot" "rsnapshot"
+    zen_map_set "_zen_pkg_by_command" "rdiff-backup" "rdiff-backup"
+    zen_map_set "_zen_pkg_by_command" "duplicity" "duplicity"
+    zen_map_set "_zen_pkg_by_command" "rclone" "rclone"
+    zen_map_set "_zen_pkg_by_command" "borgbackup" "borgbackup"
+    zen_map_set "_zen_pkg_by_command" "restic" "restic"
+    zen_map_set "_zen_pkg_by_command" "unison" "unison"
+    zen_map_set "_zen_pkg_by_command" "syncthing" "syncthing"
+    
+    # Schedulers and automation
+    zen_map_set "_zen_pkg_by_command" "cron" "cron"
+    zen_map_set "_zen_pkg_by_command" "crontab" "cron"
+    zen_map_set "_zen_pkg_by_command" "at" "at"
+    zen_map_set "_zen_pkg_by_command" "batch" "at"
+    zen_map_set "_zen_pkg_by_command" "anacron" "anacron"
+    zen_map_set "_zen_pkg_by_command" "systemctl" "systemd"
+    zen_map_set "_zen_pkg_by_command" "service" "systemd"
+    
+    # Filesystem and storage
+    zen_map_set "_zen_pkg_by_command" "mkfs" "util-linux"
+    zen_map_set "_zen_pkg_by_command" "fsck" "util-linux"
+    zen_map_set "_zen_pkg_by_command" "tune2fs" "e2fsprogs"
+    zen_map_set "_zen_pkg_by_command" "resize2fs" "e2fsprogs"
+    zen_map_set "_zen_pkg_by_command" "e2fsck" "e2fsprogs"
+    zen_map_set "_zen_pkg_by_command" "mkfs.ext4" "e2fsprogs"
+    zen_map_set "_zen_pkg_by_command" "mkfs.ntfs" "ntfs-3g"
+    zen_map_set "_zen_pkg_by_command" "mkfs.vfat" "dosfstools"
+    zen_map_set "_zen_pkg_by_command" "mkfs.xfs" "xfsprogs"
+    zen_map_set "_zen_pkg_by_command" "xfs_repair" "xfsprogs"
+    zen_map_set "_zen_pkg_by_command" "btrfs" "btrfs-progs"
+    zen_map_set "_zen_pkg_by_command" "zfs" "zfsutils-linux"
+    zen_map_set "_zen_pkg_by_command" "lvm" "lvm2"
+    zen_map_set "_zen_pkg_by_command" "pvs" "lvm2"
+    zen_map_set "_zen_pkg_by_command" "vgs" "lvm2"
+    zen_map_set "_zen_pkg_by_command" "lvs" "lvm2"
+    zen_map_set "_zen_pkg_by_command" "mdadm" "mdadm"
+    zen_map_set "_zen_pkg_by_command" "cryptsetup" "cryptsetup"
+    
+    # Performance and benchmarking
+    zen_map_set "_zen_pkg_by_command" "stress" "stress"
+    zen_map_set "_zen_pkg_by_command" "stress-ng" "stress-ng"
+    zen_map_set "_zen_pkg_by_command" "sysbench" "sysbench"
+    zen_map_set "_zen_pkg_by_command" "iperf" "iperf"
+    zen_map_set "_zen_pkg_by_command" "iperf3" "iperf3"
+    zen_map_set "_zen_pkg_by_command" "bonnie++" "bonnie++"
+    zen_map_set "_zen_pkg_by_command" "hdparm" "hdparm"
+    zen_map_set "_zen_pkg_by_command" "smartctl" "smartmontools"
+    zen_map_set "_zen_pkg_by_command" "badblocks" "e2fsprogs"
+    
+    # Hardware information and control
+    zen_map_set "_zen_pkg_by_command" "lshw" "lshw"
+    zen_map_set "_zen_pkg_by_command" "lscpu" "util-linux"
+    zen_map_set "_zen_pkg_by_command" "lspci" "pciutils"
+    zen_map_set "_zen_pkg_by_command" "lsusb" "usbutils"
+    zen_map_set "_zen_pkg_by_command" "dmidecode" "dmidecode"
+    zen_map_set "_zen_pkg_by_command" "hwinfo" "hwinfo"
+    zen_map_set "_zen_pkg_by_command" "inxi" "inxi"
+    zen_map_set "_zen_pkg_by_command" "sensors" "lm-sensors"
+    zen_map_set "_zen_pkg_by_command" "fancontrol" "lm-sensors"
+    zen_map_set "_zen_pkg_by_command" "cpufreq-info" "cpufrequtils"
+    zen_map_set "_zen_pkg_by_command" "powertop" "powertop"
+    zen_map_set "_zen_pkg_by_command" "acpi" "acpi"
+    
+    # Audio and video
+    zen_map_set "_zen_pkg_by_command" "alsamixer" "alsa-utils"
+    zen_map_set "_zen_pkg_by_command" "amixer" "alsa-utils"
+    zen_map_set "_zen_pkg_by_command" "aplay" "alsa-utils"
+    zen_map_set "_zen_pkg_by_command" "arecord" "alsa-utils"
+    zen_map_set "_zen_pkg_by_command" "pulseaudio" "pulseaudio"
+    zen_map_set "_zen_pkg_by_command" "pactl" "pulseaudio-utils"
+    zen_map_set "_zen_pkg_by_command" "pavucontrol" "pavucontrol"
+    zen_map_set "_zen_pkg_by_command" "sox" "sox"
+    zen_map_set "_zen_pkg_by_command" "mplayer" "mplayer"
+    zen_map_set "_zen_pkg_by_command" "mpv" "mpv"
+    zen_map_set "_zen_pkg_by_command" "mpc" "mpc"
+    zen_map_set "_zen_pkg_by_command" "mpd" "mpd"
+    zen_map_set "_zen_pkg_by_command" "cmus" "cmus"
+    zen_map_set "_zen_pkg_by_command" "rhythmbox" "rhythmbox"
+    zen_map_set "_zen_pkg_by_command" "audacity" "audacity"
+    zen_map_set "_zen_pkg_by_command" "handbrake" "handbrake"
+    zen_map_set "_zen_pkg_by_command" "mencoder" "mencoder"
+    zen_map_set "_zen_pkg_by_command" "transcode" "transcode"
+    
+    # Graphics and image processing
+    zen_map_set "_zen_pkg_by_command" "inkscape" "inkscape"
+    zen_map_set "_zen_pkg_by_command" "blender" "blender"
+    zen_map_set "_zen_pkg_by_command" "krita" "krita"
+    zen_map_set "_zen_pkg_by_command" "darktable" "darktable"
+    zen_map_set "_zen_pkg_by_command" "rawtherapee" "rawtherapee"
+    zen_map_set "_zen_pkg_by_command" "shotwell" "shotwell"
+    zen_map_set "_zen_pkg_by_command" "digikam" "digikam"
+    zen_map_set "_zen_pkg_by_command" "gthumb" "gthumb"
+    zen_map_set "_zen_pkg_by_command" "eog" "eog"
+    zen_map_set "_zen_pkg_by_command" "feh" "feh"
+    zen_map_set "_zen_pkg_by_command" "gpicview" "gpicview"
+    zen_map_set "_zen_pkg_by_command" "pinta" "pinta"
+    zen_map_set "_zen_pkg_by_command" "kolourpaint" "kolourpaint"
+    zen_map_set "_zen_pkg_by_command" "scrot" "scrot"
+    zen_map_set "_zen_pkg_by_command" "gnome-screenshot" "gnome-screenshot"
+    zen_map_set "_zen_pkg_by_command" "flameshot" "flameshot"
+    zen_map_set "_zen_pkg_by_command" "shutter" "shutter"
+    
+    # Office and productivity
+    zen_map_set "_zen_pkg_by_command" "libreoffice" "libreoffice"
+    zen_map_set "_zen_pkg_by_command" "writer" "libreoffice-writer"
+    zen_map_set "_zen_pkg_by_command" "calc" "libreoffice-calc"
+    zen_map_set "_zen_pkg_by_command" "impress" "libreoffice-impress"
+    zen_map_set "_zen_pkg_by_command" "draw" "libreoffice-draw"
+    zen_map_set "_zen_pkg_by_command" "evince" "evince"
+    zen_map_set "_zen_pkg_by_command" "okular" "okular"
+    zen_map_set "_zen_pkg_by_command" "zathura" "zathura"
+    zen_map_set "_zen_pkg_by_command" "mupdf" "mupdf"
+    zen_map_set "_zen_pkg_by_command" "xpdf" "xpdf"
+    zen_map_set "_zen_pkg_by_command" "pdftk" "pdftk"
+    zen_map_set "_zen_pkg_by_command" "qpdf" "qpdf"
+    zen_map_set "_zen_pkg_by_command" "gs" "ghostscript"
+    zen_map_set "_zen_pkg_by_command" "ps2pdf" "ghostscript"
+    zen_map_set "_zen_pkg_by_command" "pandoc" "pandoc"
+    zen_map_set "_zen_pkg_by_command" "texlive" "texlive"
+    zen_map_set "_zen_pkg_by_command" "latex" "texlive-latex-base"
+    zen_map_set "_zen_pkg_by_command" "pdflatex" "texlive-latex-base"
+    
+    # Communication and browsers
+    zen_map_set "_zen_pkg_by_command" "firefox" "firefox"
+    zen_map_set "_zen_pkg_by_command" "chromium" "chromium-browser"
+    zen_map_set "_zen_pkg_by_command" "chrome" "google-chrome-stable"
+    zen_map_set "_zen_pkg_by_command" "opera" "opera-stable"
+    zen_map_set "_zen_pkg_by_command" "lynx" "lynx"
+    zen_map_set "_zen_pkg_by_command" "w3m" "w3m"
+    zen_map_set "_zen_pkg_by_command" "links" "links"
+    zen_map_set "_zen_pkg_by_command" "elinks" "elinks"
+    zen_map_set "_zen_pkg_by_command" "thunderbird" "thunderbird"
+    zen_map_set "_zen_pkg_by_command" "evolution" "evolution"
+    zen_map_set "_zen_pkg_by_command" "claws-mail" "claws-mail"
+    zen_map_set "_zen_pkg_by_command" "pidgin" "pidgin"
+    zen_map_set "_zen_pkg_by_command" "hexchat" "hexchat"
+    zen_map_set "_zen_pkg_by_command" "weechat" "weechat"
+    zen_map_set "_zen_pkg_by_command" "irssi" "irssi"
+    zen_map_set "_zen_pkg_by_command" "skype" "skypeforlinux"
+    zen_map_set "_zen_pkg_by_command" "telegram" "telegram-desktop"
+    zen_map_set "_zen_pkg_by_command" "discord" "discord"
+    zen_map_set "_zen_pkg_by_command" "slack" "slack-desktop"
+    
+    # Terminal emulators and multiplexers
+    zen_map_set "_zen_pkg_by_command" "gnome-terminal" "gnome-terminal"
+    zen_map_set "_zen_pkg_by_command" "konsole" "konsole"
+    zen_map_set "_zen_pkg_by_command" "xterm" "xterm"
+    zen_map_set "_zen_pkg_by_command" "urxvt" "rxvt-unicode"
+    zen_map_set "_zen_pkg_by_command" "terminator" "terminator"
+    zen_map_set "_zen_pkg_by_command" "tilix" "tilix"
+    zen_map_set "_zen_pkg_by_command" "alacritty" "alacritty"
+    zen_map_set "_zen_pkg_by_command" "kitty" "kitty"
+    zen_map_set "_zen_pkg_by_command" "tmux" "tmux"
+    zen_map_set "_zen_pkg_by_command" "screen" "screen"
+    zen_map_set "_zen_pkg_by_command" "byobu" "byobu"
+    
+    # File managers
+    zen_map_set "_zen_pkg_by_command" "nautilus" "nautilus"
+    zen_map_set "_zen_pkg_by_command" "dolphin" "dolphin"
+    zen_map_set "_zen_pkg_by_command" "thunar" "thunar"
+    zen_map_set "_zen_pkg_by_command" "nemo" "nemo"
+    zen_map_set "_zen_pkg_by_command" "caja" "caja"
+    zen_map_set "_zen_pkg_by_command" "pcmanfm" "pcmanfm"
+    zen_map_set "_zen_pkg_by_command" "ranger" "ranger"
+    zen_map_set "_zen_pkg_by_command" "mc" "mc"
+    zen_map_set "_zen_pkg_by_command" "nnn" "nnn"
+    zen_map_set "_zen_pkg_by_command" "lf" "lf"
+    zen_map_set "_zen_pkg_by_command" "vifm" "vifm"
+    
+    # System information and utilities
+    zen_map_set "_zen_pkg_by_command" "uname" "coreutils"
+    zen_map_set "_zen_pkg_by_command" "hostname" "hostname"
+    zen_map_set "_zen_pkg_by_command" "id" "coreutils"
+    zen_map_set "_zen_pkg_by_command" "whoami" "coreutils"
+    zen_map_set "_zen_pkg_by_command" "groups" "coreutils"
+    zen_map_set "_zen_pkg_by_command" "users" "coreutils"
+    zen_map_set "_zen_pkg_by_command" "last" "util-linux"
+    zen_map_set "_zen_pkg_by_command" "lastlog" "util-linux"
+    zen_map_set "_zen_pkg_by_command" "finger" "finger"
+    zen_map_set "_zen_pkg_by_command" "chfn" "passwd"
+    zen_map_set "_zen_pkg_by_command" "chsh" "passwd"
+    zen_map_set "_zen_pkg_by_command" "passwd" "passwd"
+    zen_map_set "_zen_pkg_by_command" "su" "util-linux"
+    zen_map_set "_zen_pkg_by_command" "sudo" "sudo"
+    zen_map_set "_zen_pkg_by_command" "visudo" "sudo"
+    
+    # Programming and development environments
+    zen_map_set "_zen_pkg_by_command" "eclipse" "eclipse"
+    zen_map_set "_zen_pkg_by_command" "netbeans" "netbeans"
+    zen_map_set "_zen_pkg_by_command" "kdevelop" "kdevelop"
+    zen_map_set "_zen_pkg_by_command" "codeblocks" "codeblocks"
+    zen_map_set "_zen_pkg_by_command" "geany" "geany"
+    zen_map_set "_zen_pkg_by_command" "atom" "atom"
+    zen_map_set "_zen_pkg_by_command" "sublime" "sublime-text"
+    zen_map_set "_zen_pkg_by_command" "brackets" "brackets"
+    zen_map_set "_zen_pkg_by_command" "bluefish" "bluefish"
+    zen_map_set "_zen_pkg_by_command" "kate" "kate"
+    zen_map_set "_zen_pkg_by_command" "gedit" "gedit"
+    zen_map_set "_zen_pkg_by_command" "mousepad" "mousepad"
+    zen_map_set "_zen_pkg_by_command" "pluma" "pluma"
+    zen_map_set "_zen_pkg_by_command" "leafpad" "leafpad"
+    
+    # Additional programming languages and tools
+    zen_map_set "_zen_pkg_by_command" "nodejs" "nodejs"
+    zen_map_set "_zen_pkg_by_command" "yarn" "yarn"
+    zen_map_set "_zen_pkg_by_command" "composer" "composer"
+    zen_map_set "_zen_pkg_by_command" "maven" "maven"
+    zen_map_set "_zen_pkg_by_command" "mvn" "maven"
+    zen_map_set "_zen_pkg_by_command" "gradle" "gradle"
+    zen_map_set "_zen_pkg_by_command" "ant" "ant"
+    zen_map_set "_zen_pkg_by_command" "sbt" "sbt"
+    zen_map_set "_zen_pkg_by_command" "lein" "leiningen"
+    zen_map_set "_zen_pkg_by_command" "stack" "haskell-stack"
+    zen_map_set "_zen_pkg_by_command" "cabal" "cabal-install"
+    zen_map_set "_zen_pkg_by_command" "ghc" "ghc"
+    zen_map_set "_zen_pkg_by_command" "erlang" "erlang"
+    zen_map_set "_zen_pkg_by_command" "elixir" "elixir"
+    zen_map_set "_zen_pkg_by_command" "mix" "elixir"
+    zen_map_set "_zen_pkg_by_command" "dart" "dart"
+    zen_map_set "_zen_pkg_by_command" "flutter" "flutter"
+    zen_map_set "_zen_pkg_by_command" "deno" "deno"
+    zen_map_set "_zen_pkg_by_command" "bun" "bun"
+    zen_map_set "_zen_pkg_by_command" "crystal" "crystal"
+    zen_map_set "_zen_pkg_by_command" "nim" "nim"
+    zen_map_set "_zen_pkg_by_command" "zig" "zig"
+    zen_map_set "_zen_pkg_by_command" "odin" "odin"
+    zen_map_set "_zen_pkg_by_command" "v" "vlang"
+    
+    # Cloud and infrastructure tools
+    zen_map_set "_zen_pkg_by_command" "kubectl" "kubectl"
+    zen_map_set "_zen_pkg_by_command" "helm" "helm"
+    zen_map_set "_zen_pkg_by_command" "terraform" "terraform"
+    zen_map_set "_zen_pkg_by_command" "ansible" "ansible"
+    zen_map_set "_zen_pkg_by_command" "ansible-playbook" "ansible"
+    zen_map_set "_zen_pkg_by_command" "packer" "packer"
+    zen_map_set "_zen_pkg_by_command" "aws" "awscli"
+    zen_map_set "_zen_pkg_by_command" "gcloud" "google-cloud-sdk"
+    zen_map_set "_zen_pkg_by_command" "az" "azure-cli"
+    zen_map_set "_zen_pkg_by_command" "doctl" "doctl"
+    zen_map_set "_zen_pkg_by_command" "minikube" "minikube"
+    zen_map_set "_zen_pkg_by_command" "kind" "kind"
+    zen_map_set "_zen_pkg_by_command" "k3s" "k3s"
+    zen_map_set "_zen_pkg_by_command" "skaffold" "skaffold"
+    zen_map_set "_zen_pkg_by_command" "istioctl" "istio"
+    zen_map_set "_zen_pkg_by_command" "consul" "consul"
+    zen_map_set "_zen_pkg_by_command" "vault" "vault"
+    zen_map_set "_zen_pkg_by_command" "nomad" "nomad"
+    
+    # Additional network and security tools
+    zen_map_set "_zen_pkg_by_command" "wireshark" "wireshark"
+    zen_map_set "_zen_pkg_by_command" "tshark" "tshark"
+    zen_map_set "_zen_pkg_by_command" "tcpdump" "tcpdump"
+    zen_map_set "_zen_pkg_by_command" "ettercap" "ettercap-text-only"
+    zen_map_set "_zen_pkg_by_command" "aircrack-ng" "aircrack-ng"
+    zen_map_set "_zen_pkg_by_command" "john" "john"
+    zen_map_set "_zen_pkg_by_command" "hashcat" "hashcat"
+    zen_map_set "_zen_pkg_by_command" "hydra" "hydra"
+    zen_map_set "_zen_pkg_by_command" "nessus" "nessus"
+    zen_map_set "_zen_pkg_by_command" "metasploit" "metasploit-framework"
+    zen_map_set "_zen_pkg_by_command" "nikto" "nikto"
+    zen_map_set "_zen_pkg_by_command" "sqlmap" "sqlmap"
+    zen_map_set "_zen_pkg_by_command" "burpsuite" "burpsuite"
+    zen_map_set "_zen_pkg_by_command" "dirb" "dirb"
+    zen_map_set "_zen_pkg_by_command" "gobuster" "gobuster"
+    zen_map_set "_zen_pkg_by_command" "dirbuster" "dirbuster"
+    zen_map_set "_zen_pkg_by_command" "wpscan" "wpscan"
+    zen_map_set "_zen_pkg_by_command" "enum4linux" "enum4linux"
+    zen_map_set "_zen_pkg_by_command" "smbclient" "smbclient"
+    zen_map_set "_zen_pkg_by_command" "nmap-scripts" "nmap"
+    
+    # Games and entertainment
+    zen_map_set "_zen_pkg_by_command" "steam" "steam"
+    zen_map_set "_zen_pkg_by_command" "lutris" "lutris"
+    zen_map_set "_zen_pkg_by_command" "wine" "wine"
+    zen_map_set "_zen_pkg_by_command" "dosbox" "dosbox"
+    zen_map_set "_zen_pkg_by_command" "scummvm" "scummvm"
+    zen_map_set "_zen_pkg_by_command" "retroarch" "retroarch"
+    zen_map_set "_zen_pkg_by_command" "mame" "mame"
+    zen_map_set "_zen_pkg_by_command" "supertux" "supertux"
+    zen_map_set "_zen_pkg_by_command" "supertuxkart" "supertuxkart"
+    zen_map_set "_zen_pkg_by_command" "0ad" "0ad"
+    zen_map_set "_zen_pkg_by_command" "wesnoth" "wesnoth"
+    zen_map_set "_zen_pkg_by_command" "freeciv" "freeciv-client-gtk"
+    zen_map_set "_zen_pkg_by_command" "openttd" "openttd"
+    zen_map_set "_zen_pkg_by_command" "warzone2100" "warzone2100"
+    zen_map_set "_zen_pkg_by_command" "xonotic" "xonotic"
+    zen_map_set "_zen_pkg_by_command" "nexuiz" "nexuiz"
+    zen_map_set "_zen_pkg_by_command" "urbanterror" "urbanterror"
+    zen_map_set "_zen_pkg_by_command" "cube2" "cube2"
+    zen_map_set "_zen_pkg_by_command" "assaultcube" "assaultcube"
+    
+    # Mathematical and scientific software
+    zen_map_set "_zen_pkg_by_command" "octave" "octave"
+    zen_map_set "_zen_pkg_by_command" "scilab" "scilab"
+    zen_map_set "_zen_pkg_by_command" "maxima" "maxima"
+    zen_map_set "_zen_pkg_by_command" "gap" "gap"
+    zen_map_set "_zen_pkg_by_command" "sage" "sagemath"
+    zen_map_set "_zen_pkg_by_command" "geogebra" "geogebra"
+    zen_map_set "_zen_pkg_by_command" "gnuplot" "gnuplot"
+    zen_map_set "_zen_pkg_by_command" "grace" "grace"
+    zen_map_set "_zen_pkg_by_command" "kst" "kst"
+    zen_map_set "_zen_pkg_by_command" "paraview" "paraview"
+    zen_map_set "_zen_pkg_by_command" "freecad" "freecad"
+    zen_map_set "_zen_pkg_by_command" "kicad" "kicad"
+    zen_map_set "_zen_pkg_by_command" "openscad" "openscad"
+    zen_map_set "_zen_pkg_by_command" "qcad" "qcad"
+    zen_map_set "_zen_pkg_by_command" "librecad" "librecad"
+    zen_map_set "_zen_pkg_by_command" "stellarium" "stellarium"
+    zen_map_set "_zen_pkg_by_command" "celestia" "celestia"
+    zen_map_set "_zen_pkg_by_command" "kstars" "kstars"
+    
+    # Additional utilities and tools
+    zen_map_set "_zen_pkg_by_command" "tree" "tree"
+    zen_map_set "_zen_pkg_by_command" "ncdu" "ncdu"
+    zen_map_set "_zen_pkg_by_command" "baobab" "baobab"
+    zen_map_set "_zen_pkg_by_command" "bleachbit" "bleachbit"
+    zen_map_set "_zen_pkg_by_command" "gparted" "gparted"
+    zen_map_set "_zen_pkg_by_command" "timeshift" "timeshift"
+    zen_map_set "_zen_pkg_by_command" "deja-dup" "deja-dup"
+    zen_map_set "_zen_pkg_by_command" "keepassxc" "keepassxc"
+    zen_map_set "_zen_pkg_by_command" "bitwarden" "bitwarden"
+    zen_map_set "_zen_pkg_by_command" "pass" "pass"
+    zen_map_set "_zen_pkg_by_command" "qrencode" "qrencode"
+    zen_map_set "_zen_pkg_by_command" "zbar" "zbar-tools"
+    zen_map_set "_zen_pkg_by_command" "fortune" "fortune-mod"
+    zen_map_set "_zen_pkg_by_command" "cowsay" "cowsay"
+    zen_map_set "_zen_pkg_by_command" "figlet" "figlet"
+    zen_map_set "_zen_pkg_by_command" "toilet" "toilet"
+    zen_map_set "_zen_pkg_by_command" "sl" "sl"
+    zen_map_set "_zen_pkg_by_command" "lolcat" "lolcat"
+    zen_map_set "_zen_pkg_by_command" "neofetch" "neofetch"
+    zen_map_set "_zen_pkg_by_command" "screenfetch" "screenfetch"
+    zen_map_set "_zen_pkg_by_command" "pfetch" "pfetch"
+    zen_map_set "_zen_pkg_by_command" "fastfetch" "fastfetch"
+    zen_map_set "_zen_pkg_by_command" "hyfetch" "hyfetch"
+    zen_map_set "_zen_pkg_by_command" "onefetch" "onefetch"
+    zen_map_set "_zen_pkg_by_command" "cpufetch" "cpufetch"
+    zen_map_set "_zen_pkg_by_command" "ramfetch" "ramfetch"
+}
+
+# Initialize package mappings for Red Hat-based distributions
+# Uses YUM/DNF package names for RHEL, CentOS, Fedora, Rocky, etc.
+# Globals:
+#   Uses zen_map functions to populate _zen_pkg_by_command
+# Arguments:
+#   None
+# Outputs:
+#   None
+# Returns:
+#   None
+_zen_pkg_init_redhat() {
+    # Essential development tools and basic utilities
+    zen_map_set "_zen_pkg_by_command" "curl" "curl"
+    zen_map_set "_zen_pkg_by_command" "wget" "wget"
+    zen_map_set "_zen_pkg_by_command" "git" "git"
+    zen_map_set "_zen_pkg_by_command" "vim" "vim"
+    zen_map_set "_zen_pkg_by_command" "nano" "nano"
+    zen_map_set "_zen_pkg_by_command" "emacs" "emacs"
+    zen_map_set "_zen_pkg_by_command" "gcc" "gcc"
+    zen_map_set "_zen_pkg_by_command" "g++" "gcc-c++"
+    zen_map_set "_zen_pkg_by_command" "make" "make"
+    zen_map_set "_zen_pkg_by_command" "cmake" "cmake"
+    zen_map_set "_zen_pkg_by_command" "python3" "python3"
+    zen_map_set "_zen_pkg_by_command" "python" "python3"
+    zen_map_set "_zen_pkg_by_command" "pip" "python3-pip"
+    zen_map_set "_zen_pkg_by_command" "pip3" "python3-pip"
+    zen_map_set "_zen_pkg_by_command" "node" "nodejs"
+    zen_map_set "_zen_pkg_by_command" "npm" "npm"
+    zen_map_set "_zen_pkg_by_command" "java" "java-openjdk"
+    zen_map_set "_zen_pkg_by_command" "javac" "java-openjdk-devel"
+    zen_map_set "_zen_pkg_by_command" "ruby" "ruby"
+    zen_map_set "_zen_pkg_by_command" "php" "php"
+    zen_map_set "_zen_pkg_by_command" "perl" "perl"
+    zen_map_set "_zen_pkg_by_command" "go" "golang"
+    zen_map_set "_zen_pkg_by_command" "rustc" "rust"
+    zen_map_set "_zen_pkg_by_command" "cargo" "cargo"
+    zen_map_set "_zen_pkg_by_command" "ssh" "openssh-clients"
+    zen_map_set "_zen_pkg_by_command" "scp" "openssh-clients"
+    zen_map_set "_zen_pkg_by_command" "rsync" "rsync"
+    zen_map_set "_zen_pkg_by_command" "htop" "htop"
+    zen_map_set "_zen_pkg_by_command" "nmap" "nmap"
+    zen_map_set "_zen_pkg_by_command" "zip" "zip"
+    zen_map_set "_zen_pkg_by_command" "unzip" "unzip"
+    zen_map_set "_zen_pkg_by_command" "tar" "tar"
+    zen_map_set "_zen_pkg_by_command" "gzip" "gzip"
+    zen_map_set "_zen_pkg_by_command" "find" "findutils"
+    zen_map_set "_zen_pkg_by_command" "locate" "mlocate"
+    
+    # Core utilities
+    zen_map_set "_zen_pkg_by_command" "which" "which"
+    zen_map_set "_zen_pkg_by_command" "tree" "tree"
+    
+    # Web browsers
+    zen_map_set "_zen_pkg_by_command" "firefox" "firefox"
+    zen_map_set "_zen_pkg_by_command" "chromium" "chromium"
+    
+    # Servers and services
+    zen_map_set "_zen_pkg_by_command" "apache2" "httpd"
+    zen_map_set "_zen_pkg_by_command" "nginx" "nginx"
+    zen_map_set "_zen_pkg_by_command" "mysql" "mysql-server"
+    zen_map_set "_zen_pkg_by_command" "mysqld" "mysql-server"
+    zen_map_set "_zen_pkg_by_command" "postgresql" "postgresql-server"
+    zen_map_set "_zen_pkg_by_command" "postgres" "postgresql-server"
+    zen_map_set "_zen_pkg_by_command" "docker" "docker"
+    zen_map_set "_zen_pkg_by_command" "podman" "podman"
+    zen_map_set "_zen_pkg_by_command" "bind" "bind"
+    zen_map_set "_zen_pkg_by_command" "named" "bind"
+    
+    # Terminal tools
+    zen_map_set "_zen_pkg_by_command" "tmux" "tmux"
+    zen_map_set "_zen_pkg_by_command" "screen" "screen"
+    zen_map_set "_zen_pkg_by_command" "zsh" "zsh"
+    zen_map_set "_zen_pkg_by_command" "fish" "fish"
+    
+    # Network tools
+    zen_map_set "_zen_pkg_by_command" "wireshark" "wireshark"
+    zen_map_set "_zen_pkg_by_command" "tcpdump" "tcpdump"
+    zen_map_set "_zen_pkg_by_command" "netstat" "net-tools"
+    zen_map_set "_zen_pkg_by_command" "ss" "iproute"
+    zen_map_set "_zen_pkg_by_command" "ping" "iputils"
+    zen_map_set "_zen_pkg_by_command" "traceroute" "traceroute"
+    zen_map_set "_zen_pkg_by_command" "dig" "bind-utils"
+    zen_map_set "_zen_pkg_by_command" "nslookup" "bind-utils"
+    
+    # Multimedia
+    zen_map_set "_zen_pkg_by_command" "ffmpeg" "ffmpeg"
+    zen_map_set "_zen_pkg_by_command" "vlc" "vlc"
+    zen_map_set "_zen_pkg_by_command" "mpv" "mpv"
+    zen_map_set "_zen_pkg_by_command" "gimp" "gimp"
+    zen_map_set "_zen_pkg_by_command" "audacity" "audacity"
+    zen_map_set "_zen_pkg_by_command" "inkscape" "inkscape"
+    zen_map_set "_zen_pkg_by_command" "blender" "blender"
+    
+    # Editors and IDEs
+    zen_map_set "_zen_pkg_by_command" "code" "code"
+    zen_map_set "_zen_pkg_by_command" "subl" "sublime-text"
+    zen_map_set "_zen_pkg_by_command" "atom" "atom"
+    
+    # System monitoring
+    zen_map_set "_zen_pkg_by_command" "iotop" "iotop"
+    zen_map_set "_zen_pkg_by_command" "iftop" "iftop"
+    zen_map_set "_zen_pkg_by_command" "top" "procps-ng"
+    zen_map_set "_zen_pkg_by_command" "ps" "procps-ng"
+    zen_map_set "_zen_pkg_by_command" "free" "procps-ng"
+    zen_map_set "_zen_pkg_by_command" "uptime" "procps-ng"
+    zen_map_set "_zen_pkg_by_command" "lscpu" "util-linux"
+    zen_map_set "_zen_pkg_by_command" "lsblk" "util-linux"
+    zen_map_set "_zen_pkg_by_command" "fdisk" "util-linux"
+    zen_map_set "_zen_pkg_by_command" "mount" "util-linux"
+    zen_map_set "_zen_pkg_by_command" "umount" "util-linux"
+    zen_map_set "_zen_pkg_by_command" "iptables" "iptables"
+    zen_map_set "_zen_pkg_by_command" "firewalld" "firewalld"
+    zen_map_set "_zen_pkg_by_command" "systemctl" "systemd"
+    zen_map_set "_zen_pkg_by_command" "journalctl" "systemd"
+}
+
+# Initialize package mappings for SUSE-based distributions
+# Uses zypper package names for openSUSE, SLES, etc.
+# Globals:
+#   Uses zen_map functions to populate _zen_pkg_by_command
+# Arguments:
+#   None
+# Outputs:
+#   None
+# Returns:
+#   None
+_zen_pkg_init_suse() {
+    # Core utilities
+    zen_map_set "_zen_pkg_by_command" "curl" "curl"
+    zen_map_set "_zen_pkg_by_command" "wget" "wget"
+    zen_map_set "_zen_pkg_by_command" "git" "git"
+    zen_map_set "_zen_pkg_by_command" "python3" "python3"
+    zen_map_set "_zen_pkg_by_command" "pip3" "python3-pip"
+    zen_map_set "_zen_pkg_by_command" "node" "nodejs"
+    zen_map_set "_zen_pkg_by_command" "npm" "npm"
+    
+    # SUSE specific package names
+    zen_map_set "_zen_pkg_by_command" "gcc" "gcc"
+    zen_map_set "_zen_pkg_by_command" "g++" "gcc-c++"
+    zen_map_set "_zen_pkg_by_command" "make" "make"
+    zen_map_set "_zen_pkg_by_command" "vim" "vim"
+    zen_map_set "_zen_pkg_by_command" "nano" "nano"
+    zen_map_set "_zen_pkg_by_command" "firefox" "MozillaFirefox"
+    zen_map_set "_zen_pkg_by_command" "chromium" "chromium"
+    zen_map_set "_zen_pkg_by_command" "htop" "htop"
+    zen_map_set "_zen_pkg_by_command" "tree" "tree"
+    zen_map_set "_zen_pkg_by_command" "zip" "zip"
+    zen_map_set "_zen_pkg_by_command" "unzip" "unzip"
+    zen_map_set "_zen_pkg_by_command" "ssh" "openssh"
+    zen_map_set "_zen_pkg_by_command" "rsync" "rsync"
+    zen_map_set "_zen_pkg_by_command" "docker" "docker"
+    zen_map_set "_zen_pkg_by_command" "apache2" "apache2"
+    zen_map_set "_zen_pkg_by_command" "nginx" "nginx"
+    zen_map_set "_zen_pkg_by_command" "mysql" "mysql"
+    zen_map_set "_zen_pkg_by_command" "postgresql" "postgresql"
+    zen_map_set "_zen_pkg_by_command" "tmux" "tmux"
+    zen_map_set "_zen_pkg_by_command" "screen" "screen"
+}
+
+# Initialize package mappings for Arch-based distributions
+# Uses pacman package names for Arch Linux, Manjaro, EndeavourOS, etc.
+# Globals:
+#   Uses zen_map functions to populate _zen_pkg_by_command
+# Arguments:
+#   None
+# Outputs:
+#   None
+# Returns:
+#   None
+_zen_pkg_init_arch() {
+    # Essential development tools and basic utilities
+    zen_map_set "_zen_pkg_by_command" "curl" "curl"
+    zen_map_set "_zen_pkg_by_command" "wget" "wget"
+    zen_map_set "_zen_pkg_by_command" "git" "git"
+    zen_map_set "_zen_pkg_by_command" "vim" "vim"
+    zen_map_set "_zen_pkg_by_command" "nano" "nano"
+    zen_map_set "_zen_pkg_by_command" "emacs" "emacs"
+    zen_map_set "_zen_pkg_by_command" "gcc" "gcc"
+    zen_map_set "_zen_pkg_by_command" "g++" "gcc"
+    zen_map_set "_zen_pkg_by_command" "make" "make"
+    zen_map_set "_zen_pkg_by_command" "cmake" "cmake"
+    zen_map_set "_zen_pkg_by_command" "python" "python"
+    zen_map_set "_zen_pkg_by_command" "python3" "python"
+    zen_map_set "_zen_pkg_by_command" "pip" "python-pip"
+    zen_map_set "_zen_pkg_by_command" "pip3" "python-pip"
+    zen_map_set "_zen_pkg_by_command" "node" "nodejs"
+    zen_map_set "_zen_pkg_by_command" "npm" "npm"
+    zen_map_set "_zen_pkg_by_command" "java" "jre-openjdk"
+    zen_map_set "_zen_pkg_by_command" "javac" "jdk-openjdk"
+    zen_map_set "_zen_pkg_by_command" "ruby" "ruby"
+    zen_map_set "_zen_pkg_by_command" "php" "php"
+    zen_map_set "_zen_pkg_by_command" "perl" "perl"
+    zen_map_set "_zen_pkg_by_command" "go" "go"
+    zen_map_set "_zen_pkg_by_command" "rustc" "rust"
+    zen_map_set "_zen_pkg_by_command" "cargo" "rust"
+    zen_map_set "_zen_pkg_by_command" "ssh" "openssh"
+    zen_map_set "_zen_pkg_by_command" "scp" "openssh"
+    zen_map_set "_zen_pkg_by_command" "rsync" "rsync"
+    zen_map_set "_zen_pkg_by_command" "htop" "htop"
+    zen_map_set "_zen_pkg_by_command" "nmap" "nmap"
+    zen_map_set "_zen_pkg_by_command" "zip" "zip"
+    zen_map_set "_zen_pkg_by_command" "unzip" "unzip"
+    zen_map_set "_zen_pkg_by_command" "tar" "tar"
+    zen_map_set "_zen_pkg_by_command" "gzip" "gzip"
+    zen_map_set "_zen_pkg_by_command" "find" "findutils"
+    zen_map_set "_zen_pkg_by_command" "locate" "mlocate"
+    
+    # Core utilities
+    zen_map_set "_zen_pkg_by_command" "which" "which"
+    zen_map_set "_zen_pkg_by_command" "tree" "tree"
+    
+    # Web browsers
+    zen_map_set "_zen_pkg_by_command" "firefox" "firefox"
+    zen_map_set "_zen_pkg_by_command" "chromium" "chromium"
+    
+    # Servers and services
+    zen_map_set "_zen_pkg_by_command" "apache2" "apache"
+    zen_map_set "_zen_pkg_by_command" "nginx" "nginx"
+    zen_map_set "_zen_pkg_by_command" "mysql" "mysql"
+    zen_map_set "_zen_pkg_by_command" "mysqld" "mysql"
+    zen_map_set "_zen_pkg_by_command" "postgresql" "postgresql"
+    zen_map_set "_zen_pkg_by_command" "postgres" "postgresql"
+    zen_map_set "_zen_pkg_by_command" "docker" "docker"
+    zen_map_set "_zen_pkg_by_command" "podman" "podman"
+    
+    # Terminal tools
+    zen_map_set "_zen_pkg_by_command" "tmux" "tmux"
+    zen_map_set "_zen_pkg_by_command" "screen" "screen"
+    zen_map_set "_zen_pkg_by_command" "zsh" "zsh"
+    zen_map_set "_zen_pkg_by_command" "fish" "fish"
+    
+    # Network tools
+    zen_map_set "_zen_pkg_by_command" "wireshark" "wireshark-qt"
+    zen_map_set "_zen_pkg_by_command" "tcpdump" "tcpdump"
+    zen_map_set "_zen_pkg_by_command" "netstat" "net-tools"
+    zen_map_set "_zen_pkg_by_command" "ss" "iproute2"
+    zen_map_set "_zen_pkg_by_command" "ping" "iputils"
+    zen_map_set "_zen_pkg_by_command" "traceroute" "traceroute"
+    zen_map_set "_zen_pkg_by_command" "dig" "bind"
+    zen_map_set "_zen_pkg_by_command" "nslookup" "bind"
+    
+    # Multimedia
+    zen_map_set "_zen_pkg_by_command" "ffmpeg" "ffmpeg"
+    zen_map_set "_zen_pkg_by_command" "vlc" "vlc"
+    zen_map_set "_zen_pkg_by_command" "mpv" "mpv"
+    zen_map_set "_zen_pkg_by_command" "gimp" "gimp"
+    zen_map_set "_zen_pkg_by_command" "audacity" "audacity"
+    zen_map_set "_zen_pkg_by_command" "inkscape" "inkscape"
+    zen_map_set "_zen_pkg_by_command" "blender" "blender"
+    
+    # Office and productivity
+    zen_map_set "_zen_pkg_by_command" "libreoffice" "libreoffice-fresh"
+    zen_map_set "_zen_pkg_by_command" "thunderbird" "thunderbird"
+    
+    # Editors and IDEs
+    zen_map_set "_zen_pkg_by_command" "code" "code"
+    zen_map_set "_zen_pkg_by_command" "subl" "sublime-text-4"
+    
+    # System monitoring
+    zen_map_set "_zen_pkg_by_command" "iotop" "iotop"
+    zen_map_set "_zen_pkg_by_command" "iftop" "iftop"
+    zen_map_set "_zen_pkg_by_command" "top" "procps-ng"
+    zen_map_set "_zen_pkg_by_command" "ps" "procps-ng"
+    zen_map_set "_zen_pkg_by_command" "free" "procps-ng"
+    zen_map_set "_zen_pkg_by_command" "uptime" "procps-ng"
+    zen_map_set "_zen_pkg_by_command" "lscpu" "util-linux"
+    zen_map_set "_zen_pkg_by_command" "lsblk" "util-linux"
+    zen_map_set "_zen_pkg_by_command" "fdisk" "util-linux"
+    zen_map_set "_zen_pkg_by_command" "mount" "util-linux"
+    zen_map_set "_zen_pkg_by_command" "umount" "util-linux"
+}
+
+# Initialize package mappings for Alpine Linux
+# Uses apk package names for Alpine Linux
+# Globals:
+#   Uses zen_map functions to populate _zen_pkg_by_command
+# Arguments:
+#   None
+# Outputs:
+#   None
+# Returns:
+#   None
+_zen_pkg_init_alpine() {
+    # Essential development tools and basic utilities
+    zen_map_set "_zen_pkg_by_command" "curl" "curl"
+    zen_map_set "_zen_pkg_by_command" "wget" "wget"
+    zen_map_set "_zen_pkg_by_command" "git" "git"
+    zen_map_set "_zen_pkg_by_command" "vim" "vim"
+    zen_map_set "_zen_pkg_by_command" "nano" "nano"
+    zen_map_set "_zen_pkg_by_command" "emacs" "emacs"
+    zen_map_set "_zen_pkg_by_command" "gcc" "gcc"
+    zen_map_set "_zen_pkg_by_command" "g++" "g++"
+    zen_map_set "_zen_pkg_by_command" "make" "make"
+    zen_map_set "_zen_pkg_by_command" "cmake" "cmake"
+    zen_map_set "_zen_pkg_by_command" "python3" "python3"
+    zen_map_set "_zen_pkg_by_command" "python" "python3"
+    zen_map_set "_zen_pkg_by_command" "pip" "py3-pip"
+    zen_map_set "_zen_pkg_by_command" "pip3" "py3-pip"
+    zen_map_set "_zen_pkg_by_command" "node" "nodejs"
+    zen_map_set "_zen_pkg_by_command" "npm" "npm"
+    zen_map_set "_zen_pkg_by_command" "java" "openjdk11"
+    zen_map_set "_zen_pkg_by_command" "javac" "openjdk11"
+    zen_map_set "_zen_pkg_by_command" "ruby" "ruby"
+    zen_map_set "_zen_pkg_by_command" "php" "php8"
+    zen_map_set "_zen_pkg_by_command" "perl" "perl"
+    zen_map_set "_zen_pkg_by_command" "go" "go"
+    zen_map_set "_zen_pkg_by_command" "rustc" "rust"
+    zen_map_set "_zen_pkg_by_command" "cargo" "cargo"
+    zen_map_set "_zen_pkg_by_command" "ssh" "openssh-client"
+    zen_map_set "_zen_pkg_by_command" "scp" "openssh-client"
+    zen_map_set "_zen_pkg_by_command" "rsync" "rsync"
+    zen_map_set "_zen_pkg_by_command" "htop" "htop"
+    zen_map_set "_zen_pkg_by_command" "nmap" "nmap"
+    zen_map_set "_zen_pkg_by_command" "zip" "zip"
+    zen_map_set "_zen_pkg_by_command" "unzip" "unzip"
+    zen_map_set "_zen_pkg_by_command" "tar" "tar"
+    zen_map_set "_zen_pkg_by_command" "gzip" "gzip"
+    zen_map_set "_zen_pkg_by_command" "find" "findutils"
+    zen_map_set "_zen_pkg_by_command" "locate" "mlocate"
+    
+    # Core utilities
+    zen_map_set "_zen_pkg_by_command" "which" "which"
+    zen_map_set "_zen_pkg_by_command" "tree" "tree"
+    zen_map_set "_zen_pkg_by_command" "bash" "bash"
+    zen_map_set "_zen_pkg_by_command" "zsh" "zsh"
+    zen_map_set "_zen_pkg_by_command" "fish" "fish"
+    
+    # Web browsers
+    zen_map_set "_zen_pkg_by_command" "firefox" "firefox"
+    zen_map_set "_zen_pkg_by_command" "chromium" "chromium"
+    
+    # Servers and services
+    zen_map_set "_zen_pkg_by_command" "nginx" "nginx"
+    zen_map_set "_zen_pkg_by_command" "apache2" "apache2"
+    zen_map_set "_zen_pkg_by_command" "mysql" "mysql"
+    zen_map_set "_zen_pkg_by_command" "mysqld" "mysql"
+    zen_map_set "_zen_pkg_by_command" "postgresql" "postgresql"
+    zen_map_set "_zen_pkg_by_command" "postgres" "postgresql"
+    zen_map_set "_zen_pkg_by_command" "docker" "docker"
+    
+    # Terminal tools
+    zen_map_set "_zen_pkg_by_command" "tmux" "tmux"
+    zen_map_set "_zen_pkg_by_command" "screen" "screen"
+    
+    # Network tools
+    zen_map_set "_zen_pkg_by_command" "tcpdump" "tcpdump"
+    zen_map_set "_zen_pkg_by_command" "netstat" "net-tools"
+    zen_map_set "_zen_pkg_by_command" "ss" "iproute2"
+    zen_map_set "_zen_pkg_by_command" "ping" "iputils"
+    zen_map_set "_zen_pkg_by_command" "traceroute" "traceroute"
+    zen_map_set "_zen_pkg_by_command" "dig" "bind-tools"
+    zen_map_set "_zen_pkg_by_command" "nslookup" "bind-tools"
+    
+    # System monitoring
+    zen_map_set "_zen_pkg_by_command" "iotop" "iotop"
+    zen_map_set "_zen_pkg_by_command" "iftop" "iftop"
+    zen_map_set "_zen_pkg_by_command" "top" "procps"
+    zen_map_set "_zen_pkg_by_command" "ps" "procps"
+    zen_map_set "_zen_pkg_by_command" "free" "procps"
+    zen_map_set "_zen_pkg_by_command" "uptime" "procps"
+    zen_map_set "_zen_pkg_by_command" "lscpu" "util-linux"
+    zen_map_set "_zen_pkg_by_command" "lsblk" "util-linux"
+    zen_map_set "_zen_pkg_by_command" "fdisk" "util-linux"
+    zen_map_set "_zen_pkg_by_command" "mount" "util-linux"
+    zen_map_set "_zen_pkg_by_command" "umount" "util-linux"
+}
+
+# Initialize package mappings for Gentoo Linux
+# Uses emerge package names for Gentoo and derivatives
+# Globals:
+#   Uses zen_map functions to populate _zen_pkg_by_command
+# Arguments:
+#   None
+# Outputs:
+#   None
+# Returns:
+#   None
+_zen_pkg_init_gentoo() {
+    # Essential development tools and basic utilities with Gentoo categories
+    zen_map_set "_zen_pkg_by_command" "curl" "net-misc/curl"
+    zen_map_set "_zen_pkg_by_command" "wget" "net-misc/wget"
+    zen_map_set "_zen_pkg_by_command" "git" "dev-vcs/git"
+    zen_map_set "_zen_pkg_by_command" "vim" "app-editors/vim"
+    zen_map_set "_zen_pkg_by_command" "nano" "app-editors/nano"
+    zen_map_set "_zen_pkg_by_command" "emacs" "app-editors/emacs"
+    zen_map_set "_zen_pkg_by_command" "gcc" "sys-devel/gcc"
+    zen_map_set "_zen_pkg_by_command" "g++" "sys-devel/gcc"
+    zen_map_set "_zen_pkg_by_command" "make" "sys-devel/make"
+    zen_map_set "_zen_pkg_by_command" "cmake" "dev-util/cmake"
+    zen_map_set "_zen_pkg_by_command" "python3" "dev-lang/python"
+    zen_map_set "_zen_pkg_by_command" "python" "dev-lang/python"
+    zen_map_set "_zen_pkg_by_command" "pip" "dev-python/pip"
+    zen_map_set "_zen_pkg_by_command" "pip3" "dev-python/pip"
+    zen_map_set "_zen_pkg_by_command" "node" "net-libs/nodejs"
+    zen_map_set "_zen_pkg_by_command" "npm" "net-libs/nodejs"
+    zen_map_set "_zen_pkg_by_command" "java" "dev-java/openjdk"
+    zen_map_set "_zen_pkg_by_command" "javac" "dev-java/openjdk"
+    zen_map_set "_zen_pkg_by_command" "ruby" "dev-lang/ruby"
+    zen_map_set "_zen_pkg_by_command" "php" "dev-lang/php"
+    zen_map_set "_zen_pkg_by_command" "perl" "dev-lang/perl"
+    zen_map_set "_zen_pkg_by_command" "go" "dev-lang/go"
+    zen_map_set "_zen_pkg_by_command" "rustc" "dev-lang/rust"
+    zen_map_set "_zen_pkg_by_command" "cargo" "dev-lang/rust"
+    zen_map_set "_zen_pkg_by_command" "ssh" "net-misc/openssh"
+    zen_map_set "_zen_pkg_by_command" "scp" "net-misc/openssh"
+    zen_map_set "_zen_pkg_by_command" "rsync" "net-misc/rsync"
+    zen_map_set "_zen_pkg_by_command" "htop" "sys-process/htop"
+    zen_map_set "_zen_pkg_by_command" "nmap" "net-analyzer/nmap"
+    zen_map_set "_zen_pkg_by_command" "zip" "app-arch/zip"
+    zen_map_set "_zen_pkg_by_command" "unzip" "app-arch/unzip"
+    zen_map_set "_zen_pkg_by_command" "tar" "app-arch/tar"
+    zen_map_set "_zen_pkg_by_command" "gzip" "app-arch/gzip"
+    zen_map_set "_zen_pkg_by_command" "find" "sys-apps/findutils"
+    zen_map_set "_zen_pkg_by_command" "locate" "sys-apps/mlocate"
+    
+    # Core utilities
+    zen_map_set "_zen_pkg_by_command" "which" "sys-apps/which"
+    zen_map_set "_zen_pkg_by_command" "tree" "app-text/tree"
+    zen_map_set "_zen_pkg_by_command" "bash" "app-shells/bash"
+    zen_map_set "_zen_pkg_by_command" "zsh" "app-shells/zsh"
+    zen_map_set "_zen_pkg_by_command" "fish" "app-shells/fish"
+    
+    # Web browsers
+    zen_map_set "_zen_pkg_by_command" "firefox" "www-client/firefox"
+    zen_map_set "_zen_pkg_by_command" "chromium" "www-client/chromium"
+    
+    # Servers and services
+    zen_map_set "_zen_pkg_by_command" "apache2" "www-servers/apache"
+    zen_map_set "_zen_pkg_by_command" "nginx" "www-servers/nginx"
+    zen_map_set "_zen_pkg_by_command" "mysql" "dev-db/mysql"
+    zen_map_set "_zen_pkg_by_command" "mysqld" "dev-db/mysql"
+    zen_map_set "_zen_pkg_by_command" "postgresql" "dev-db/postgresql"
+    zen_map_set "_zen_pkg_by_command" "postgres" "dev-db/postgresql"
+    zen_map_set "_zen_pkg_by_command" "docker" "app-emulation/docker"
+    
+    # Terminal tools
+    zen_map_set "_zen_pkg_by_command" "tmux" "app-misc/tmux"
+    zen_map_set "_zen_pkg_by_command" "screen" "app-misc/screen"
+    
+    # Network tools
+    zen_map_set "_zen_pkg_by_command" "wireshark" "net-analyzer/wireshark"
+    zen_map_set "_zen_pkg_by_command" "tcpdump" "net-analyzer/tcpdump"
+    zen_map_set "_zen_pkg_by_command" "netstat" "net-misc/netkit-netstat"
+    zen_map_set "_zen_pkg_by_command" "ss" "sys-apps/iproute2"
+    zen_map_set "_zen_pkg_by_command" "ping" "net-misc/iputils"
+    zen_map_set "_zen_pkg_by_command" "traceroute" "net-misc/traceroute"
+    zen_map_set "_zen_pkg_by_command" "dig" "net-dns/bind-tools"
+    zen_map_set "_zen_pkg_by_command" "nslookup" "net-dns/bind-tools"
+    
+    # System monitoring
+    zen_map_set "_zen_pkg_by_command" "iotop" "sys-process/iotop"
+    zen_map_set "_zen_pkg_by_command" "iftop" "net-analyzer/iftop"
+    zen_map_set "_zen_pkg_by_command" "top" "sys-process/procps"
+    zen_map_set "_zen_pkg_by_command" "ps" "sys-process/procps"
+    zen_map_set "_zen_pkg_by_command" "free" "sys-process/procps"
+    zen_map_set "_zen_pkg_by_command" "uptime" "sys-process/procps"
+    zen_map_set "_zen_pkg_by_command" "lscpu" "sys-apps/util-linux"
+    zen_map_set "_zen_pkg_by_command" "lsblk" "sys-apps/util-linux"
+    zen_map_set "_zen_pkg_by_command" "fdisk" "sys-apps/util-linux"
+    zen_map_set "_zen_pkg_by_command" "mount" "sys-apps/util-linux"
+    zen_map_set "_zen_pkg_by_command" "umount" "sys-apps/util-linux"
+    zen_map_set "_zen_pkg_by_command" "g++" "sys-devel/gcc"
+    zen_map_set "_zen_pkg_by_command" "make" "sys-devel/make"
+    zen_map_set "_zen_pkg_by_command" "vim" "app-editors/vim"
+    zen_map_set "_zen_pkg_by_command" "nano" "app-editors/nano"
+    zen_map_set "_zen_pkg_by_command" "emacs" "app-editors/emacs"
+    zen_map_set "_zen_pkg_by_command" "firefox" "www-client/firefox"
+    zen_map_set "_zen_pkg_by_command" "chromium" "www-client/chromium"
+    zen_map_set "_zen_pkg_by_command" "htop" "sys-process/htop"
+    zen_map_set "_zen_pkg_by_command" "tree" "app-text/tree"
+    zen_map_set "_zen_pkg_by_command" "zip" "app-arch/zip"
+    zen_map_set "_zen_pkg_by_command" "unzip" "app-arch/unzip"
+    zen_map_set "_zen_pkg_by_command" "ssh" "net-misc/openssh"
+    zen_map_set "_zen_pkg_by_command" "rsync" "net-misc/rsync"
+    zen_map_set "_zen_pkg_by_command" "docker" "app-containers/docker"
+    zen_map_set "_zen_pkg_by_command" "nginx" "www-servers/nginx"
+    zen_map_set "_zen_pkg_by_command" "apache2" "www-servers/apache"
+    zen_map_set "_zen_pkg_by_command" "mysql" "dev-db/mysql"
+    zen_map_set "_zen_pkg_by_command" "postgresql" "dev-db/postgresql"
+    zen_map_set "_zen_pkg_by_command" "tmux" "app-misc/tmux"
+    zen_map_set "_zen_pkg_by_command" "screen" "app-misc/screen"
+}
+
+# Initialize package mappings for Void Linux
+# Uses xbps package names for Void Linux
+# Globals:
+#   Uses zen_map functions to populate _zen_pkg_by_command
+# Arguments:
+#   None
+# Outputs:
+#   None
+# Returns:
+#   None
+_zen_pkg_init_void() {
+    # Core utilities
+    zen_map_set "_zen_pkg_by_command" "curl" "curl"
+    zen_map_set "_zen_pkg_by_command" "wget" "wget"
+    zen_map_set "_zen_pkg_by_command" "git" "git"
+    zen_map_set "_zen_pkg_by_command" "python3" "python3"
+    zen_map_set "_zen_pkg_by_command" "pip3" "python3-pip"
+    zen_map_set "_zen_pkg_by_command" "node" "nodejs"
+    zen_map_set "_zen_pkg_by_command" "npm" "nodejs"
+    
+    # Void specific package names
+    zen_map_set "_zen_pkg_by_command" "gcc" "gcc"
+    zen_map_set "_zen_pkg_by_command" "g++" "gcc"
+    zen_map_set "_zen_pkg_by_command" "make" "make"
+    zen_map_set "_zen_pkg_by_command" "vim" "vim"
+    zen_map_set "_zen_pkg_by_command" "nano" "nano"
+    zen_map_set "_zen_pkg_by_command" "emacs" "emacs"
+    zen_map_set "_zen_pkg_by_command" "firefox" "firefox"
+    zen_map_set "_zen_pkg_by_command" "chromium" "chromium"
+    zen_map_set "_zen_pkg_by_command" "htop" "htop"
+    zen_map_set "_zen_pkg_by_command" "tree" "tree"
+    zen_map_set "_zen_pkg_by_command" "zip" "zip"
+    zen_map_set "_zen_pkg_by_command" "unzip" "unzip"
+    zen_map_set "_zen_pkg_by_command" "ssh" "openssh"
+    zen_map_set "_zen_pkg_by_command" "rsync" "rsync"
+    zen_map_set "_zen_pkg_by_command" "docker" "docker"
+    zen_map_set "_zen_pkg_by_command" "nginx" "nginx"
+    zen_map_set "_zen_pkg_by_command" "tmux" "tmux"
+    zen_map_set "_zen_pkg_by_command" "screen" "screen"
+}
+
+# Initialize package mappings for NixOS
+# Uses nix package names for NixOS
+# Globals:
+#   Uses zen_map functions to populate _zen_pkg_by_command
+# Arguments:
+#   None
+# Outputs:
+#   None
+# Returns:
+#   None
+_zen_pkg_init_nixos() {
+    # Core utilities
+    zen_map_set "_zen_pkg_by_command" "curl" "curl"
+    zen_map_set "_zen_pkg_by_command" "wget" "wget"
+    zen_map_set "_zen_pkg_by_command" "git" "git"
+    zen_map_set "_zen_pkg_by_command" "python3" "python3"
+    zen_map_set "_zen_pkg_by_command" "pip3" "python3Packages.pip"
+    zen_map_set "_zen_pkg_by_command" "node" "nodejs"
+    zen_map_set "_zen_pkg_by_command" "npm" "nodePackages.npm"
+    
+    # NixOS specific package names
+    zen_map_set "_zen_pkg_by_command" "gcc" "gcc"
+    zen_map_set "_zen_pkg_by_command" "g++" "gcc"
+    zen_map_set "_zen_pkg_by_command" "make" "gnumake"
+    zen_map_set "_zen_pkg_by_command" "vim" "vim"
+    zen_map_set "_zen_pkg_by_command" "nano" "nano"
+    zen_map_set "_zen_pkg_by_command" "emacs" "emacs"
+    zen_map_set "_zen_pkg_by_command" "firefox" "firefox"
+    zen_map_set "_zen_pkg_by_command" "chromium" "chromium"
+    zen_map_set "_zen_pkg_by_command" "htop" "htop"
+    zen_map_set "_zen_pkg_by_command" "tree" "tree"
+    zen_map_set "_zen_pkg_by_command" "zip" "zip"
+    zen_map_set "_zen_pkg_by_command" "unzip" "unzip"
+    zen_map_set "_zen_pkg_by_command" "ssh" "openssh"
+    zen_map_set "_zen_pkg_by_command" "rsync" "rsync"
+    zen_map_set "_zen_pkg_by_command" "docker" "docker"
+    zen_map_set "_zen_pkg_by_command" "nginx" "nginx"
+    zen_map_set "_zen_pkg_by_command" "tmux" "tmux"
+    zen_map_set "_zen_pkg_by_command" "screen" "screen"
+}
+
+# Initialize package mappings for Mandrake/Mandriva Linux
+# Uses urpmi package names for Mandrake/Mandriva derivatives
+# Globals:
+#   Uses zen_map functions to populate _zen_pkg_by_command
+# Arguments:
+#   None
+# Outputs:
+#   None
+# Returns:
+#   None
+_zen_pkg_init_mandrake() {
+    # Core utilities (similar to Red Hat)
+    zen_map_set "_zen_pkg_by_command" "curl" "curl"
+    zen_map_set "_zen_pkg_by_command" "wget" "wget"
+    zen_map_set "_zen_pkg_by_command" "git" "git"
+    zen_map_set "_zen_pkg_by_command" "python3" "python3"
+    zen_map_set "_zen_pkg_by_command" "pip3" "python3-pip"
+    zen_map_set "_zen_pkg_by_command" "gcc" "gcc"
+    zen_map_set "_zen_pkg_by_command" "g++" "gcc-c++"
+    zen_map_set "_zen_pkg_by_command" "make" "make"
+    zen_map_set "_zen_pkg_by_command" "vim" "vim"
+    zen_map_set "_zen_pkg_by_command" "nano" "nano"
+    zen_map_set "_zen_pkg_by_command" "firefox" "firefox"
+    zen_map_set "_zen_pkg_by_command" "htop" "htop"
+    zen_map_set "_zen_pkg_by_command" "tree" "tree"
+    zen_map_set "_zen_pkg_by_command" "ssh" "openssh-clients"
+    zen_map_set "_zen_pkg_by_command" "rsync" "rsync"
+}
+
+# Initialize package mappings for macOS
+# Uses Homebrew package names for macOS
+# Globals:
+#   Uses zen_map functions to populate _zen_pkg_by_command
+# Arguments:
+#   None
+# Outputs:
+#   None
+# Returns:
+#   None
+_zen_pkg_init_macos() {
+    # Essential development tools and basic utilities via Homebrew
+    zen_map_set "_zen_pkg_by_command" "curl" "curl"
+    zen_map_set "_zen_pkg_by_command" "wget" "wget"
+    zen_map_set "_zen_pkg_by_command" "git" "git"
+    zen_map_set "_zen_pkg_by_command" "vim" "vim"
+    zen_map_set "_zen_pkg_by_command" "nano" "nano"
+    zen_map_set "_zen_pkg_by_command" "emacs" "emacs"
+    zen_map_set "_zen_pkg_by_command" "gcc" "gcc"
+    zen_map_set "_zen_pkg_by_command" "g++" "gcc"
+    zen_map_set "_zen_pkg_by_command" "make" "make"
+    zen_map_set "_zen_pkg_by_command" "cmake" "cmake"
+    zen_map_set "_zen_pkg_by_command" "autoconf" "autoconf"
+    zen_map_set "_zen_pkg_by_command" "automake" "automake"
+    zen_map_set "_zen_pkg_by_command" "libtool" "libtool"
+    zen_map_set "_zen_pkg_by_command" "pkg-config" "pkg-config"
+    
+    # Programming languages
+    zen_map_set "_zen_pkg_by_command" "python3" "python@3.12"
+    zen_map_set "_zen_pkg_by_command" "python" "python@3.12"
+    zen_map_set "_zen_pkg_by_command" "pip" "python@3.12"
+    zen_map_set "_zen_pkg_by_command" "pip3" "python@3.12"
+    zen_map_set "_zen_pkg_by_command" "node" "node"
+    zen_map_set "_zen_pkg_by_command" "npm" "node"
+    zen_map_set "_zen_pkg_by_command" "yarn" "yarn"
+    zen_map_set "_zen_pkg_by_command" "java" "openjdk"
+    zen_map_set "_zen_pkg_by_command" "javac" "openjdk"
+    zen_map_set "_zen_pkg_by_command" "ruby" "ruby"
+    zen_map_set "_zen_pkg_by_command" "php" "php"
+    zen_map_set "_zen_pkg_by_command" "perl" "perl"
+    zen_map_set "_zen_pkg_by_command" "go" "go"
+    zen_map_set "_zen_pkg_by_command" "rustc" "rust"
+    zen_map_set "_zen_pkg_by_command" "cargo" "rust"
+    zen_map_set "_zen_pkg_by_command" "swift" "swift"
+    zen_map_set "_zen_pkg_by_command" "kotlin" "kotlin"
+    zen_map_set "_zen_pkg_by_command" "scala" "scala"
+    zen_map_set "_zen_pkg_by_command" "clang" "llvm"
+    zen_map_set "_zen_pkg_by_command" "clang++" "llvm"
+    
+    # Shell and terminal tools
+    zen_map_set "_zen_pkg_by_command" "bash" "bash"
+    zen_map_set "_zen_pkg_by_command" "zsh" "zsh"
+    zen_map_set "_zen_pkg_by_command" "fish" "fish"
+    zen_map_set "_zen_pkg_by_command" "tmux" "tmux"
+    zen_map_set "_zen_pkg_by_command" "screen" "screen"
+    zen_map_set "_zen_pkg_by_command" "tree" "tree"
+    zen_map_set "_zen_pkg_by_command" "htop" "htop"
+    zen_map_set "_zen_pkg_by_command" "btop" "btop"
+    zen_map_set "_zen_pkg_by_command" "glances" "glances"
+    zen_map_set "_zen_pkg_by_command" "neofetch" "neofetch"
+    zen_map_set "_zen_pkg_by_command" "exa" "exa"
+    zen_map_set "_zen_pkg_by_command" "bat" "bat"
+    zen_map_set "_zen_pkg_by_command" "fd" "fd"
+    zen_map_set "_zen_pkg_by_command" "rg" "ripgrep"
+    zen_map_set "_zen_pkg_by_command" "fzf" "fzf"
+    zen_map_set "_zen_pkg_by_command" "jq" "jq"
+    zen_map_set "_zen_pkg_by_command" "yq" "yq"
+    
+    # Network tools and utilities
+    zen_map_set "_zen_pkg_by_command" "ssh" "openssh"
+    zen_map_set "_zen_pkg_by_command" "scp" "openssh"
+    zen_map_set "_zen_pkg_by_command" "rsync" "rsync"
+    zen_map_set "_zen_pkg_by_command" "nmap" "nmap"
+    zen_map_set "_zen_pkg_by_command" "tcpdump" "tcpdump"
+    zen_map_set "_zen_pkg_by_command" "wireshark" "wireshark"
+    zen_map_set "_zen_pkg_by_command" "netcat" "netcat"
+    zen_map_set "_zen_pkg_by_command" "nc" "netcat"
+    zen_map_set "_zen_pkg_by_command" "telnet" "telnet"
+    zen_map_set "_zen_pkg_by_command" "dig" "bind"
+    zen_map_set "_zen_pkg_by_command" "nslookup" "bind"
+    zen_map_set "_zen_pkg_by_command" "host" "bind"
+    zen_map_set "_zen_pkg_by_command" "ping" "iputils"
+    zen_map_set "_zen_pkg_by_command" "traceroute" "traceroute"
+    zen_map_set "_zen_pkg_by_command" "mtr" "mtr"
+    zen_map_set "_zen_pkg_by_command" "iperf3" "iperf3"
+    zen_map_set "_zen_pkg_by_command" "speedtest" "speedtest-cli"
+    
+    # Archive and compression
+    zen_map_set "_zen_pkg_by_command" "zip" "zip"
+    zen_map_set "_zen_pkg_by_command" "unzip" "unzip"
+    zen_map_set "_zen_pkg_by_command" "tar" "gnu-tar"
+    zen_map_set "_zen_pkg_by_command" "gzip" "gzip"
+    zen_map_set "_zen_pkg_by_command" "gunzip" "gzip"
+    zen_map_set "_zen_pkg_by_command" "7z" "p7zip"
+    zen_map_set "_zen_pkg_by_command" "rar" "unrar"
+    zen_map_set "_zen_pkg_by_command" "unrar" "unrar"
+    
+    # Version control and project tools
+    zen_map_set "_zen_pkg_by_command" "svn" "subversion"
+    zen_map_set "_zen_pkg_by_command" "mercurial" "mercurial"
+    zen_map_set "_zen_pkg_by_command" "hg" "mercurial"
+    zen_map_set "_zen_pkg_by_command" "gh" "gh"
+    zen_map_set "_zen_pkg_by_command" "hub" "hub"
+    zen_map_set "_zen_pkg_by_command" "tig" "tig"
+    zen_map_set "_zen_pkg_by_command" "lazygit" "lazygit"
+    
+    # Databases
+    zen_map_set "_zen_pkg_by_command" "mysql" "mysql"
+    zen_map_set "_zen_pkg_by_command" "mysqld" "mysql"
+    zen_map_set "_zen_pkg_by_command" "postgresql" "postgresql"
+    zen_map_set "_zen_pkg_by_command" "postgres" "postgresql"
+    zen_map_set "_zen_pkg_by_command" "psql" "postgresql"
+    zen_map_set "_zen_pkg_by_command" "redis-server" "redis"
+    zen_map_set "_zen_pkg_by_command" "redis-cli" "redis"
+    zen_map_set "_zen_pkg_by_command" "mongo" "mongodb/brew/mongodb-community"
+    zen_map_set "_zen_pkg_by_command" "mongod" "mongodb/brew/mongodb-community"
+    zen_map_set "_zen_pkg_by_command" "sqlite3" "sqlite"
+    
+    # Web servers and services
+    zen_map_set "_zen_pkg_by_command" "nginx" "nginx"
+    zen_map_set "_zen_pkg_by_command" "apache2" "httpd"
+    zen_map_set "_zen_pkg_by_command" "httpd" "httpd"
+    
+    # Containerization and virtualization
+    zen_map_set "_zen_pkg_by_command" "docker" "docker"
+    zen_map_set "_zen_pkg_by_command" "docker-compose" "docker-compose"
+    zen_map_set "_zen_pkg_by_command" "podman" "podman"
+    zen_map_set "_zen_pkg_by_command" "vagrant" "vagrant"
+    zen_map_set "_zen_pkg_by_command" "virtualbox" "virtualbox"
+    
+    # Cloud and DevOps tools
+    zen_map_set "_zen_pkg_by_command" "kubectl" "kubernetes-cli"
+    zen_map_set "_zen_pkg_by_command" "helm" "helm"
+    zen_map_set "_zen_pkg_by_command" "terraform" "terraform"
+    zen_map_set "_zen_pkg_by_command" "packer" "packer"
+    zen_map_set "_zen_pkg_by_command" "ansible" "ansible"
+    zen_map_set "_zen_pkg_by_command" "aws" "awscli"
+    zen_map_set "_zen_pkg_by_command" "gcloud" "google-cloud-sdk"
+    zen_map_set "_zen_pkg_by_command" "az" "azure-cli"
+    zen_map_set "_zen_pkg_by_command" "doctl" "doctl"
+    
+    # Web browsers (cask packages)
+    zen_map_set "_zen_pkg_by_command" "firefox" "firefox"
+    zen_map_set "_zen_pkg_by_command" "chromium" "chromium"
+    zen_map_set "_zen_pkg_by_command" "chrome" "google-chrome"
+    zen_map_set "_zen_pkg_by_command" "safari" "safari"
+    zen_map_set "_zen_pkg_by_command" "opera" "opera"
+    zen_map_set "_zen_pkg_by_command" "edge" "microsoft-edge"
+    
+    # Editors and IDEs (cask packages)
+    zen_map_set "_zen_pkg_by_command" "code" "visual-studio-code"
+    zen_map_set "_zen_pkg_by_command" "subl" "sublime-text"
+    zen_map_set "_zen_pkg_by_command" "atom" "atom"
+    zen_map_set "_zen_pkg_by_command" "webstorm" "webstorm"
+    zen_map_set "_zen_pkg_by_command" "intellij" "intellij-idea"
+    zen_map_set "_zen_pkg_by_command" "pycharm" "pycharm"
+    zen_map_set "_zen_pkg_by_command" "android-studio" "android-studio"
+    zen_map_set "_zen_pkg_by_command" "xcode" "xcode"
+    
+    # Multimedia tools
+    zen_map_set "_zen_pkg_by_command" "ffmpeg" "ffmpeg"
+    zen_map_set "_zen_pkg_by_command" "vlc" "vlc"
+    zen_map_set "_zen_pkg_by_command" "mpv" "mpv"
+    zen_map_set "_zen_pkg_by_command" "youtube-dl" "youtube-dl"
+    zen_map_set "_zen_pkg_by_command" "yt-dlp" "yt-dlp"
+    zen_map_set "_zen_pkg_by_command" "imagemagick" "imagemagick"
+    zen_map_set "_zen_pkg_by_command" "convert" "imagemagick"
+    zen_map_set "_zen_pkg_by_command" "gimp" "gimp"
+    zen_map_set "_zen_pkg_by_command" "inkscape" "inkscape"
+    zen_map_set "_zen_pkg_by_command" "blender" "blender"
+    zen_map_set "_zen_pkg_by_command" "audacity" "audacity"
+    
+    # Communication and productivity
+    zen_map_set "_zen_pkg_by_command" "slack" "slack"
+    zen_map_set "_zen_pkg_by_command" "discord" "discord"
+    zen_map_set "_zen_pkg_by_command" "zoom" "zoom"
+    zen_map_set "_zen_pkg_by_command" "skype" "skype"
+    zen_map_set "_zen_pkg_by_command" "teams" "microsoft-teams"
+    zen_map_set "_zen_pkg_by_command" "notion" "notion"
+    zen_map_set "_zen_pkg_by_command" "obsidian" "obsidian"
+    
+    # Office and documents
+    zen_map_set "_zen_pkg_by_command" "libreoffice" "libreoffice"
+    zen_map_set "_zen_pkg_by_command" "office" "microsoft-office"
+    zen_map_set "_zen_pkg_by_command" "word" "microsoft-office"
+    zen_map_set "_zen_pkg_by_command" "excel" "microsoft-office"
+    zen_map_set "_zen_pkg_by_command" "powerpoint" "microsoft-office"
+    zen_map_set "_zen_pkg_by_command" "pandoc" "pandoc"
+    zen_map_set "_zen_pkg_by_command" "latex" "mactex"
+    zen_map_set "_zen_pkg_by_command" "texlive" "mactex"
+    
+    # System utilities
+    zen_map_set "_zen_pkg_by_command" "mas" "mas"
+    zen_map_set "_zen_pkg_by_command" "brew" "brew"
+    zen_map_set "_zen_pkg_by_command" "cask" "brew"
+    zen_map_set "_zen_pkg_by_command" "iterm2" "iterm2"
+    zen_map_set "_zen_pkg_by_command" "alacritty" "alacritty"
+    zen_map_set "_zen_pkg_by_command" "kitty" "kitty"
+    zen_map_set "_zen_pkg_by_command" "rectangle" "rectangle"
+    zen_map_set "_zen_pkg_by_command" "alfred" "alfred"
+    zen_map_set "_zen_pkg_by_command" "raycast" "raycast"
+    
+    # Security and privacy
+    zen_map_set "_zen_pkg_by_command" "gpg" "gnupg"
+    zen_map_set "_zen_pkg_by_command" "gpg2" "gnupg"
+    zen_map_set "_zen_pkg_by_command" "openssl" "openssl"
+    zen_map_set "_zen_pkg_by_command" "1password" "1password"
+    zen_map_set "_zen_pkg_by_command" "bitwarden" "bitwarden"
+    zen_map_set "_zen_pkg_by_command" "keychain" "keychain"
+}
+
+_zen_pkg_init_unknown() {
+    zen_echo_warning "Package initialization for unknown OS is not supported. " \
+    "zen_pkg_upgrade and zen_pkg_install functions " \
+    "will fail in this environment!"
+}
+
+##====================================================
+## zen_os
+##====================================================
+
+# Call OS-specific function based on detected environment
+# Constructs function name by appending "_$ZEN_OS_BASED_ON" to the base function name
+# and calls it if it exists, otherwise exits with panic
+# Globals:
+#   ZEN_OS_BASED_ON - Detected OS base (debian, redhat, suse, mandrake, macos, etc.)
+# Arguments:
+#   1 - Base function name (required)
+#   2+ - Arguments to pass to the OS-specific function (optional)
+# Outputs:
+#   Calls the OS-specific function or displays panic message
+# Returns:
+#   Returns value from OS-specific function, or exits on error
+zen_os_function() {
+    local l_base_function="$1"
+    local l_os_function="${l_base_function}_${ZEN_OS_BASED_ON}"
+    
+    if [ -z "$l_base_function" ]; then
+        zen_echo_panic "zen_os_function: Base function name is required"
+    fi
+    
+    # Check if the OS-specific function exists
+    if declare -f "$l_os_function" >/dev/null 2>&1; then
+        # Shift first argument (base function name) and pass remaining args
+        shift
+        "$l_os_function" "$@"
+    else
+        zen_echo_panic "Function '$l_os_function' does not exist for OS based on '$ZEN_OS_BASED_ON'"
+    fi
+}
+
+# Detect OS
+_zen_os_detect() {
     zen_string_lower $(uname)
     ZEN_OS_NAME=$ZEN_FUNC_RESULT
     zen_string_lower $(uname -r)
@@ -369,27 +2643,84 @@ zen_environment_detect() {
     ZEN_OS_DISTRO_CODENAME='unknown' 
     ZEN_OS_RELEASE='unknown'
     if [ "$ZEN_OS_NAME" = "linux" ] ; then
-        if [ -f /etc/redhat-release ] ; then
+        # Try modern /etc/os-release first (systemd standard)
+        if [ -f /etc/os-release ] ; then
+            . /etc/os-release
+            ZEN_OS_DISTRO_ID="$ID"
+            ZEN_OS_DISTRO_CODENAME="$NAME"
+            ZEN_OS_RELEASE="$VERSION_ID"
+            # Map ID to base OS families
+            case "$ID" in
+                ubuntu|debian|raspbian|kali|mint|elementary|pop|zorin)
+                    ZEN_OS_BASED_ON='debian' ;;
+                centos|rhel|fedora|rocky|almalinux|oracle|amazonlinux)
+                    ZEN_OS_BASED_ON='redhat' ;;
+                opensuse*|sles|sled)
+                    ZEN_OS_BASED_ON='suse' ;;
+                arch|manjaro|endeavouros|garuda)
+                    ZEN_OS_BASED_ON='arch' ;;
+                alpine)
+                    ZEN_OS_BASED_ON='alpine' ;;
+                gentoo|funtoo)
+                    ZEN_OS_BASED_ON='gentoo' ;;
+                void)
+                    ZEN_OS_BASED_ON='void' ;;
+                nixos)
+                    ZEN_OS_BASED_ON='nixos' ;;
+                *)
+                    ZEN_OS_BASED_ON="$ID" ;;
+            esac
+        # Fallback to legacy release files
+        elif [ -f /etc/redhat-release ] ; then
 			ZEN_OS_BASED_ON='redhat'
 			ZEN_OS_DISTRO_ID=$(cat /etc/redhat-release |sed s/\ release.*//)
 			ZEN_OS_DISTRO_CODENAME=$(cat /etc/redhat-release | sed s/.*\(// | sed s/\)//)
 			ZEN_OS_RELEASE=$(cat /etc/redhat-release | sed s/.*release\ // | sed s/\ .*//)
 		elif [ -f /etc/debian_version ] ; then
 			ZEN_OS_BASED_ON='debian'
+			ZEN_OS_RELEASE=$(cat /etc/debian_version)
 			if [ -f /etc/lsb-release ] ; then
 		       	ZEN_OS_DISTRO_ID=$(cat /etc/lsb-release | grep '^DISTRIB_ID' | awk -F=  '{ print $2 }')
 			    ZEN_OS_DISTRO_CODENAME=$(cat /etc/lsb-release | grep '^DISTRIB_CODENAME' | awk -F=  '{ print $2 }')
 			    ZEN_OS_RELEASE=$(cat /etc/lsb-release | grep '^DISTRIB_RELEASE' | awk -F=  '{ print $2 }')
-            fi            
+            else
+                ZEN_OS_DISTRO_ID='debian'
+                ZEN_OS_DISTRO_CODENAME='Debian'
+            fi
+        elif [ -f /etc/arch-release ] ; then
+			ZEN_OS_BASED_ON='arch'
+			ZEN_OS_DISTRO_ID='arch'
+			ZEN_OS_DISTRO_CODENAME='Arch Linux'
+			ZEN_OS_RELEASE='rolling'
 		elif [ -f /etc/SuSE-release ] ; then
 			ZEN_OS_BASED_ON='suse'
+			ZEN_OS_DISTRO_ID='suse'
 			ZEN_OS_DISTRO_CODENAME=$(cat /etc/SuSE-release | tr "\n" ' '| sed s/VERSION.*//)
 			ZEN_OS_RELEASE=$(cat /etc/SuSE-release | tr "\n" ' ' | sed s/.*=\ //)
 		elif [ -f /etc/mandrake-release ] ; then
 			ZEN_OS_BASED_ON='mandrake'
+			ZEN_OS_DISTRO_ID='mandrake'
 			ZEN_OS_DISTRO_CODENAME=$(cat /etc/mandrake-release | sed s/.*\(// | sed s/\)//)
 			ZEN_OS_RELEASE=$(cat /etc/mandrake-release | sed s/.*release\ // | sed s/\ .*//)
-		fi
+        elif [ -f /etc/alpine-release ] ; then
+			ZEN_OS_BASED_ON='alpine'
+			ZEN_OS_DISTRO_ID='alpine'
+			ZEN_OS_DISTRO_CODENAME='Alpine Linux'
+			ZEN_OS_RELEASE=$(cat /etc/alpine-release)
+        elif [ -f /etc/gentoo-release ] ; then
+			ZEN_OS_BASED_ON='gentoo'
+			ZEN_OS_DISTRO_ID='gentoo'
+			ZEN_OS_DISTRO_CODENAME='Gentoo'
+			ZEN_OS_RELEASE=$(cat /etc/gentoo-release | sed 's/.*release //' | sed 's/ .*//')
+        elif [ -f /etc/void-release ] ; then
+			ZEN_OS_BASED_ON='void'
+			ZEN_OS_DISTRO_ID='void'
+			ZEN_OS_DISTRO_CODENAME='Void Linux'
+			ZEN_OS_RELEASE='rolling'
+		else
+            # Generic Linux fallback
+            ZEN_OS_BASED_ON='linux'
+        fi
     elif [ "$ZEN_OS_NAME" = "darwin" ] ; then
         ZEN_OS_BASED_ON='macos'
         ZEN_OS_DISTRO_ID='macos'
@@ -408,20 +2739,20 @@ zen_environment_detect() {
             fi
         fi
     else
-        zen_echo_warning "Running on ${ZEN_OS_NAME} - zenbal should work fine on most Unix-like systems!"
+        zen_echo_warning "Running on unknown OS named ${ZEN_OS_NAME} " \
+                         "- zenbal should work fine on most Unix-like systems " \
+                         "except installing packages!"
 	fi
 }
 
-# Display information about zenbal defined environment variables
-zen_environment_display() {
-    zen_echo_h2 "ZEN environment variables:"
-    echo "$ZEN_OS_NAME"
-    echo "$ZEN_OS_KERNEL"
-    echo "$ZEN_OS_MACHINE_HARDWARE_NAME"
-    echo "$ZEN_OS_BASED_ON"
-    echo "$ZEN_OS_DISTRO_ID"
-    echo "$ZEN_OS_DISTRO_CODENAME"
-    echo "$ZEN_OS_RELEASE"
+# Display information about zenbal defined OS variables
+_zen_os_display() {
+    zen_echo_h2 "zenbal Operating System Information:"
+    echo ""
+    zen_echo_green "✓ Running on $ZEN_OS_NAME ($ZEN_OS_KERNEL kernel, $ZEN_OS_MACHINE_HARDWARE_NAME architecture)."
+    zen_echo_green "Distribution: $ZEN_OS_DISTRO_CODENAME ($ZEN_OS_DISTRO_ID v$ZEN_OS_RELEASE) based on $ZEN_OS_BASED_ON."
+    zen_echo_green "Package management will use $ZEN_OS_BASED_ON compatible tools."
+    echo ""
 }
 
 ##====================================================
@@ -429,7 +2760,7 @@ zen_environment_display() {
 ##====================================================
 
 # Update zenbal from GitHub repository if ZEN_AUTO_UPDATE is enabled
-zen_update_from_github() {
+_zen_update_from_github() {
     local l_github_url="https://raw.githubusercontent.com/ergenius/zenbal/main/zenbal"
     local l_script_path="${BASH_SOURCE[0]}"
     local l_backup_path="${l_script_path}.bak"
@@ -472,18 +2803,20 @@ zen_update_from_github() {
 }
 
 # Check for updates on library load if ZEN_AUTO_UPDATE is set
-zen_update_check_on_load() {
+_zen_update_check_on_load() {
     if [[ "$ZEN_AUTO_UPDATE" == "true" || "$ZEN_AUTO_UPDATE" == "1" ]]; then
-        zen_update_from_github
+        _zen_update_from_github
     fi
 }
 
 ######################################################
 
-zen_environment_detect
-zen_environment_display
+_zen_init() {
+    _zen_os_detect
+    _zen_os_display
+    _zen_pkg_init
+    _zen_update_check_on_load
+}
 
-# Check for updates if auto-update is enabled
-zen_update_check_on_load
-
+_zen_init
 
